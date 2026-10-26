@@ -12,7 +12,7 @@ export default function Navbar() {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#08071E]/95 backdrop-blur-md border-b-2 border-white/10 px-4 sm:px-6 lg:px-8 py-3">
+    <header className="sticky top-0 z-50 w-full bg-[#08071E]/95 backdrop-blur-md border-b-2 border-white/10 shadow-[0_4px_20px_rgba(8,7,30,0.5)] px-4 sm:px-6 lg:px-8 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div className="flex items-center gap-3">

@@ -20,7 +20,7 @@ export default function PublicLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#08071E] text-white selection:bg-[#D4FF00] selection:text-[#08071E] overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-[#08071E] text-white selection:bg-[#D4FF00] selection:text-[#08071E] overflow-x-clip">
       {/* Background Dot Pattern */}
       <div
         aria-hidden="true"
