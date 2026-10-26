@@ -1,143 +1,258 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Zap,
   ArrowRight,
-  ShieldCheck,
-  Sparkles,
-  MapPin,
+  Shield,
   Clock,
   Car,
+  MapPin,
+  Check,
+  Sparkles,
+  PhoneCall,
+  Navigation,
+  Compass,
   DollarSign,
   Users,
-  Compass,
-  Check,
-  Navigation,
+  Award,
+  ChevronDown,
+  Bike,
+  Leaf,
+  Crown,
+  Share2,
+  ExternalLink,
+  HelpCircle,
+  AlertCircle
 } from 'lucide-react';
-import { MOCK_LOCATIONS } from '../../data/locations';
+import { MOCK_LOCATIONS, DEFAULT_PICKUP, DEFAULT_DESTINATION } from '../../data/locations';
 import { RIDE_CATEGORIES } from '../../data/rideCategories';
 import { getRouteMetrics, calculateFare } from '../../utils/fareCalculator';
 import { formatCurrency, formatDistance, formatDuration } from '../../utils/formatters';
+import { useRideStore } from '../../store/rideStore';
 
 export default function LandingPage() {
-  const [selectedPickup, setSelectedPickup] = useState(MOCK_LOCATIONS[0]);
-  const [selectedDest, setSelectedDest] = useState(MOCK_LOCATIONS[3]);
-  const [selectedCategory, setSelectedCategory] = useState(RIDE_CATEGORIES[0]);
+  const navigate = useNavigate();
+  const setBookingDetails = useRideStore((state) => state.setBookingDetails);
 
-  const metrics = getRouteMetrics(selectedPickup.id, selectedDest.id);
+  // Live Estimator State
+  const [pickup, setPickup] = useState(DEFAULT_PICKUP);
+  const [destination, setDestination] = useState(DEFAULT_DESTINATION);
+  const [selectedCategory, setSelectedCategory] = useState(RIDE_CATEGORIES[0]);
+  const [showBar, setShowBar] = useState(false);
+  const [bookedFeedback, setBookedFeedback] = useState(false);
+
+  // Live calculations
+  const metrics = getRouteMetrics(pickup.id, destination.id);
   const estimatedFare = calculateFare(selectedCategory, metrics.distanceKm, metrics.durationMins);
 
+  // Scroll listener for bottom floating bar
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBar(window.scrollY > 450);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleQuickBook = () => {
+    setBookingDetails({
+      pickup,
+      destination,
+      category: selectedCategory,
+      distanceKm: metrics.distanceKm,
+      durationMins: metrics.durationMins,
+      estimatedFare,
+    });
+    setBookedFeedback(true);
+    setTimeout(() => {
+      navigate('/rider/confirm');
+    }, 600);
+  };
+
   return (
-    <div className="relative overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative pt-12 pb-20 sm:pt-20 sm:pb-32 px-4 sm:px-6 lg:px-8">
-        {/* Glow */}
-        <div
-          aria-hidden="true"
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[320px] bg-[#3B38F5]/15 rounded-full blur-[140px] pointer-events-none"
-        />
+    <div className="fb-page">
+      {/* Skip Link */}
+      <a className="fb-skip" href="#main">
+        Skip to main content
+      </a>
 
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
-          {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#16123F] border border-[#3B38F5]/40 text-[#D4FF00] font-neo-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-6 shadow-[2px_2px_0_#08071E]">
-            <Sparkles size={13} className="text-[#D4FF00]" />
-            <span>NEO-BRUTALIST RIDE-SHARING PLATFORM</span>
+      {/* Top Navigation */}
+      <header className="fb-top">
+        <Link to="/" className="fb-logo" aria-label="RushRide Mobility home">
+          <div className="w-8 h-8 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] flex items-center justify-center text-[#0b0630] font-black shadow-[2px_2px_0_#0b0630]">
+            <Zap size={18} fill="#0b0630" />
           </div>
+          <span className="tracking-tight text-white flex items-center gap-1">
+            rush<span className="text-[#d8fc38]">ride</span>
+          </span>
+        </Link>
 
-          {/* Heading */}
-          <h1 className="font-neo-heading text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase text-white tracking-tight leading-[0.95] max-w-5xl mb-6">
-            BEYOND TRAFFIC <br />
-            INTO{' '}
-            <span className="inline-block px-4 py-1 bg-[#D4FF00] text-[#08071E] rounded-xl border-3 border-[#08071E] shadow-[5px_5px_0_#3B38F5] rotate-[-1deg]">
-              HIGH-VOLTAGE FLOW
-            </span>
-          </h1>
+        <nav className="fb-nav" aria-label="Page navigation">
+          <a href="#perks">Perks</a>
+          <a href="#steps">Steps</a>
+          <a href="#classes">Ride Tiers</a>
+          <a href="#safety">Safety</a>
+          <a href="#rules">Rules</a>
+          <a href="#shifts">Shifts</a>
+          <a href="#faq">FAQ</a>
+        </nav>
 
-          {/* Subtitle */}
-          <p className="text-[#A5A1CE] font-neo-grotesk text-base sm:text-xl max-w-2xl leading-relaxed mb-10">
-            A dual-console ride-sharing experience designed for passengers and drivers. Interactive route maps, live lifecycle tracking, and simulated dispatch — running 100% on the frontend.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <Link
-              to="/auth"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl border-2 border-[#08071E] bg-[#D4FF00] hover:bg-[#c2ec00] text-[#08071E] font-neo-heading text-sm sm:text-base font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[4px_4px_0_#3B38F5] hover:shadow-[5px_5px_0_#3B38F5] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-            >
-              <Zap size={18} fill="#08071E" />
-              <span>Launch Demo Console</span>
-              <ArrowRight size={18} strokeWidth={3} />
-            </Link>
-
-            <Link
-              to="/rider/book"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl border-2 border-white/20 bg-[#121033] hover:bg-[#1b184a] text-white font-neo-heading text-sm sm:text-base font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[3px_3px_0_#08071E] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-            >
-              <span>Instant Fare Estimator</span>
-            </Link>
-          </div>
+        <div className="flex items-center gap-2.5 ml-auto">
+          <span className="fb-tag hidden sm:inline-block">METRO • 24/7 DISPATCH</span>
+          <Link
+            to="/role-select"
+            className="px-3.5 py-1.5 rounded-full border-2 border-white/30 hover:border-[#d8fc38] text-xs font-neo-grotesk font-bold text-white hover:text-[#d8fc38] transition-colors"
+          >
+            Switch Console
+          </Link>
+          <Link
+            to="/rider"
+            className="px-4 py-1.5 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] text-xs font-neo-heading font-black text-[#0b0630] shadow-[2px_2px_0_#0b0630] hover:-translate-y-0.5 active:translate-y-0.5 transition-all"
+          >
+            Launch App →
+          </Link>
         </div>
-      </section>
+      </header>
 
-      {/* Interactive Fare Estimator Showcase */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 border-y-2 border-[#0B0630] bg-[#0A0924]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#16123F] border border-[#3B38F5]/40 text-[#D4FF00] font-neo-mono text-[11px] font-bold uppercase tracking-wider mb-3">
-              <span>LIVE DEMO</span>
-            </div>
-            <h2 className="font-neo-heading text-3xl sm:text-4xl font-black uppercase text-white tracking-tight">
-              DETERMINISTIC FARE CALCULATOR
-            </h2>
-            <p className="font-neo-grotesk text-sm sm:text-base text-[#A5A1CE] mt-2">
-              Select sample campus transit points to preview deterministic route distance, duration, and fares.
+      {/* Main Content Area */}
+      <main id="main">
+        {/* HERO SECTION */}
+        <section className="fb-hero" aria-labelledby="fb-title">
+          <div className="fb-hero-copy">
+            <p className="fb-eyebrow">The Autonomous & On-Demand Ride Matrix</p>
+
+            <h1 className="fb-h1" id="fb-title">
+              <span>Next-Gen</span>
+              <span>RushRide</span>
+              <span className="fb-year">2026</span>
+              <svg aria-hidden="true" className="fb-burst fb-h1-burst" focusable="false" viewBox="0 0 60 60">
+                <path d="M8 40 L22 30 M14 14 L28 24 M38 6 L36 22" stroke="currentColor" strokeLinecap="round" strokeWidth="6" />
+              </svg>
+            </h1>
+
+            <p className="fb-sub">
+              All 6 ride classes, from rapid Moto to executive Black. Under 3-minute pickups. Book seamless rides or earn on your schedule with zero platform lock-in and 82% direct driver revenue.
             </p>
+
+            {/* Tilted Highlight Ribbon */}
+            <p className="fb-banner">
+              <span className="fb-brush">
+                <span className="fb-banner-small">Zero Surge Guarantee · 100% Insured Rides</span>
+                <span className="fb-banner-big">⚡ ₹0 COMMISSION ON FIRST 10 RIDES ⚡</span>
+              </span>
+            </p>
+
+            {/* Real-time Chunky Keycaps Counter */}
+            <div className="fb-count" data-phase="ready">
+              <p className="fb-count-label">
+                <span className="fb-dot inline-block"></span>
+                Sector Telematics: Live Metro Core
+              </p>
+              <div className="fb-keys" role="timer" aria-label="Fleet telematics matrix">
+                <span className="fb-key">
+                  <span className="fb-key-num">1.4k</span>
+                  <span className="fb-key-unit">cabs live</span>
+                </span>
+                <span className="fb-key">
+                  <span className="fb-key-num">2.4</span>
+                  <span className="fb-key-unit">min eta</span>
+                </span>
+                <span className="fb-key">
+                  <span className="fb-key-num">99.8</span>
+                  <span className="fb-key-unit">% fulfill</span>
+                </span>
+                <span className="fb-key fb-key-lime">
+                  <span className="fb-key-num">₹0</span>
+                  <span className="fb-key-unit">surge fee</span>
+                </span>
+              </div>
+              <p className="fb-count-when">
+                Active Fleet Mesh: <strong>Instant Auto-Dispatch Enabled Across Sector 1 to 24</strong>
+              </p>
+            </div>
+
+            {/* Hero CTAs */}
+            <div className="fb-ctas" id="fb-hero-ctas">
+              <Link to="/rider/book" className="fb-btn fb-btn-lime">
+                Book a Ride Now
+                <span aria-hidden="true">→</span>
+              </Link>
+              <Link to="/driver/dashboard" className="fb-btn fb-btn-ink">
+                Drive & Earn 82%
+                <span aria-hidden="true">↗</span>
+              </Link>
+              <a href="#calculator" className="fb-btn fb-btn-ghost">
+                Instant Fare Radar
+                <span aria-hidden="true">↓</span>
+              </a>
+            </div>
           </div>
 
-          {/* Calculator Card */}
-          <div className="bg-white text-[#08071E] rounded-3xl border-3 border-[#08071E] p-6 sm:p-8 shadow-[8px_8px_0_#08071E] grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Controls */}
-            <div className="lg:col-span-7 space-y-4">
-              <div>
-                <label className="block font-neo-mono text-[11px] font-black uppercase text-neutral-500 tracking-wider mb-1.5">
-                  Sample Pickup
-                </label>
-                <select
-                  value={selectedPickup.id}
-                  onChange={(e) => setSelectedPickup(MOCK_LOCATIONS.find((l) => l.id === e.target.value))}
-                  className="w-full bg-[#F5F6FF] border-2 border-[#08071E] rounded-xl px-4 py-3 font-neo-heading text-sm font-black uppercase text-[#08071E] shadow-[2px_2px_0_#08071E] focus:outline-none"
-                >
-                  {MOCK_LOCATIONS.map((loc) => (
-                    <option key={loc.id} value={loc.id}>
-                      {loc.name} ({loc.tag})
-                    </option>
-                  ))}
-                </select>
+          {/* Interactive Poster / Live Fare Estimator Console */}
+          <figure className="fb-poster" id="calculator">
+            <div className="fb-card p-5 sm:p-6 bg-white text-[#0b0630] rounded-[18px] border-[3px] border-[#0b0630] shadow-[8px_8px_0_#0b0630] hover:rotate-0 transition-transform duration-300">
+              {/* Radar Status Bar */}
+              <div className="flex items-center justify-between pb-3 mb-4 border-b-2 border-[#0b0630]/15">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse border border-[#0b0630]" />
+                  <span className="font-neo-heading text-xs font-black uppercase tracking-wider text-[#0b0630]">
+                    LIVE DISPATCH RADAR
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-[#d8fc38] text-[10px] font-neo-mono font-bold border border-[#0b0630]">
+                  GPS READY
+                </span>
               </div>
 
-              <div>
-                <label className="block font-neo-mono text-[11px] font-black uppercase text-neutral-500 tracking-wider mb-1.5">
-                  Sample Destination
-                </label>
-                <select
-                  value={selectedDest.id}
-                  onChange={(e) => setSelectedDest(MOCK_LOCATIONS.find((l) => l.id === e.target.value))}
-                  className="w-full bg-[#F5F6FF] border-2 border-[#08071E] rounded-xl px-4 py-3 font-neo-heading text-sm font-black uppercase text-[#08071E] shadow-[2px_2px_0_#08071E] focus:outline-none"
-                >
-                  {MOCK_LOCATIONS.map((loc) => (
-                    <option key={loc.id} value={loc.id}>
-                      {loc.name} ({loc.tag})
-                    </option>
-                  ))}
-                </select>
+              {/* Location Selectors */}
+              <div className="space-y-3 mb-4">
+                <div>
+                  <label className="block text-[11px] font-neo-grotesk font-black uppercase text-[#0b0630]/70 mb-1">
+                    Pickup Location
+                  </label>
+                  <div className="relative">
+                    <MapPin size={15} className="absolute left-3 top-3 text-[#3a2df5]" />
+                    <select
+                      value={pickup.id}
+                      onChange={(e) => setPickup(MOCK_LOCATIONS.find((l) => l.id === e.target.value) || pickup)}
+                      className="w-full pl-9 pr-3 py-2 bg-[#f4f2ff] border-2 border-[#0b0630] rounded-xl text-xs font-neo-grotesk font-bold text-[#0b0630] focus:outline-none focus:border-[#3a2df5]"
+                    >
+                      {MOCK_LOCATIONS.map((loc) => (
+                        <option key={loc.id} value={loc.id}>
+                          {loc.name} ({loc.tag})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-neo-grotesk font-black uppercase text-[#0b0630]/70 mb-1">
+                    Dropoff Destination
+                  </label>
+                  <div className="relative">
+                    <Navigation size={15} className="absolute left-3 top-3 text-[#d8fc38]" fill="#0b0630" />
+                    <select
+                      value={destination.id}
+                      onChange={(e) => setDestination(MOCK_LOCATIONS.find((l) => l.id === e.target.value) || destination)}
+                      className="w-full pl-9 pr-3 py-2 bg-[#f4f2ff] border-2 border-[#0b0630] rounded-xl text-xs font-neo-grotesk font-bold text-[#0b0630] focus:outline-none focus:border-[#3a2df5]"
+                    >
+                      {MOCK_LOCATIONS.map((loc) => (
+                        <option key={loc.id} value={loc.id}>
+                          {loc.name} ({loc.tag})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
 
-              {/* Category Pills */}
-              <div>
-                <label className="block font-neo-mono text-[11px] font-black uppercase text-neutral-500 tracking-wider mb-2">
-                  Ride Category
+              {/* Ride Tier Selector */}
+              <div className="mb-4">
+                <label className="block text-[11px] font-neo-grotesk font-black uppercase text-[#0b0630]/70 mb-1.5">
+                  Select Ride Class
                 </label>
-                <div className="grid grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-3 gap-1.5">
                   {RIDE_CATEGORIES.map((cat) => {
                     const isSelected = selectedCategory.id === cat.id;
                     return (
@@ -145,174 +260,852 @@ export default function LandingPage() {
                         key={cat.id}
                         type="button"
                         onClick={() => setSelectedCategory(cat)}
-                        className={`p-3 rounded-xl border-2 font-neo-heading text-xs font-black uppercase transition-all cursor-pointer ${
+                        className={`p-2 rounded-xl border-2 text-left transition-all ${
                           isSelected
-                            ? 'bg-[#08071E] text-[#D4FF00] border-[#08071E] shadow-[3px_3px_0_#3B38F5]'
-                            : 'bg-neutral-100 text-[#08071E] border-neutral-300 hover:border-[#08071E]'
+                            ? 'bg-[#3a2df5] text-white border-[#0b0630] shadow-[2px_2px_0_#0b0630]'
+                            : 'bg-[#f8f7ff] text-[#0b0630] border-[#0b0630]/30 hover:border-[#0b0630]'
                         }`}
                       >
-                        <div>{cat.name}</div>
-                        <div className="text-[10px] font-neo-mono text-neutral-400 mt-0.5">
-                          {cat.capacity} seats
+                        <div className="font-neo-heading text-[11px] font-black truncate">{cat.name.split('/')[0]}</div>
+                        <div className={`text-[10px] font-neo-mono ${isSelected ? 'text-[#d8fc38]' : 'text-neutral-500'}`}>
+                          ₹{cat.baseFare} base
                         </div>
                       </button>
                     );
                   })}
                 </div>
               </div>
-            </div>
 
-            {/* Live Result Display */}
-            <div className="lg:col-span-5 bg-[#08071E] text-white rounded-2xl p-6 border-2 border-[#08071E] shadow-[4px_4px_0_#3B38F5] flex flex-col justify-between h-full">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-neo-mono text-[10px] font-bold text-[#D4FF00] uppercase tracking-wider">
-                    Formula Estimate
-                  </span>
-                  <span className="font-neo-mono text-[10px] text-neutral-400 uppercase">
-                    Deterministic
-                  </span>
-                </div>
-
-                <div className="font-neo-heading text-4xl sm:text-5xl font-black text-[#D4FF00] leading-none mb-1">
-                  {formatCurrency(estimatedFare)}
-                </div>
-                <div className="font-neo-grotesk text-xs text-[#A5A1CE] mb-6">
-                  Base ₹{selectedCategory.baseFare} + (₹{selectedCategory.ratePerKm}/km) + (₹{selectedCategory.ratePerMin}/min)
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 py-3 border-y border-white/10 mb-6">
+              {/* Calculated Metrics Card */}
+              <div className="p-3.5 rounded-xl bg-[#0b0630] text-white border-2 border-[#0b0630] mb-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-neo-mono text-[10px] text-neutral-400 uppercase">Route Distance</div>
-                    <div className="font-neo-heading text-base font-black text-white">
-                      {formatDistance(metrics.distanceKm)}
-                    </div>
+                    <div className="text-[10px] font-neo-grotesk uppercase text-[#d8fc38] font-bold">Guaranteed Price</div>
+                    <div className="text-2xl font-neo-heading font-black text-white">{formatCurrency(estimatedFare)}</div>
                   </div>
-                  <div>
-                    <div className="font-neo-mono text-[10px] text-neutral-400 uppercase">Est. Duration</div>
-                    <div className="font-neo-heading text-base font-black text-white">
-                      {formatDuration(metrics.durationMins)}
+                  <div className="text-right">
+                    <div className="text-[10px] font-neo-grotesk uppercase text-neutral-400">Route Telematics</div>
+                    <div className="text-xs font-neo-mono font-bold text-white">
+                      {formatDistance(metrics.distanceKm)} · {formatDuration(metrics.durationMins)}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <Link
-                to="/rider/book"
-                className="w-full py-3.5 rounded-xl border-2 border-[#08071E] bg-[#D4FF00] hover:bg-[#c2ec00] text-[#08071E] font-neo-heading text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[2px_2px_0_#08071E] transition-all cursor-pointer"
+              {/* Direct Booking CTA */}
+              <button
+                type="button"
+                onClick={handleQuickBook}
+                className="w-full py-3 rounded-xl border-2 border-[#0b0630] bg-[#d8fc38] hover:bg-[#c6ec22] text-[#0b0630] font-neo-heading text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[3px_3px_0_#0b0630] active:translate-y-0.5 transition-all cursor-pointer"
               >
-                <span>Book This Route Now</span>
-                <ArrowRight size={15} strokeWidth={3} />
+                <Zap size={15} fill="#0b0630" />
+                <span>{bookedFeedback ? 'Dispatching Nearest Cab...' : 'Confirm & Request Ride →'}</span>
+              </button>
+            </div>
+          </figure>
+        </section>
+
+        {/* NEO-BRUTALIST INFINITE MARQUEE TICKER */}
+        <div aria-hidden="true" className="fb-marquee">
+          <div className="fb-marquee-track">
+            <span>
+              INSTANT 3-MIN PICKUP <i>•</i> ZERO SURGE PRICE LOCK <i>•</i> 6 VEHICLE TIERS <i>•</i> 82% DRIVER PAYOUT <i>•</i> 100% LIVE GPS TELEMATICS <i>•</i> 24/7 ROADSIDE SOS ESCORT <i>•</i> CASHLESS UPI & CARDS <i>•</i> VERIFIED 5-STAR DRIVERS <i>•</i>
+            </span>
+            <span>
+              INSTANT 3-MIN PICKUP <i>•</i> ZERO SURGE PRICE LOCK <i>•</i> 6 VEHICLE TIERS <i>•</i> 82% DRIVER PAYOUT <i>•</i> 100% LIVE GPS TELEMATICS <i>•</i> 24/7 ROADSIDE SOS ESCORT <i>•</i> CASHLESS UPI & CARDS <i>•</i> VERIFIED 5-STAR DRIVERS <i>•</i>
+            </span>
+          </div>
+        </div>
+
+        {/* SECTION 1: PERKS & STATS */}
+        <section className="fb-section" aria-labelledby="get" id="perks">
+          <header className="fb-head" data-fb-reveal="true">
+            <p className="fb-kicker">What you get</p>
+            <h2 className="fb-h2" id="get">
+              Transparent fares. <span className="fb-brush">Zero surge gouging.</span>
+            </h2>
+          </header>
+
+          <ul className="fb-gets" data-fb-stagger="true">
+            <li className="fb-card fb-get">
+              <span className="fb-get-big">₹0</span>
+              <h3>Surge pricing spikes</h3>
+              <p>
+                Unlike legacy ride apps that triple fares the minute raindrops fall, RushRide guarantees deterministic price ceilings. What you see is what you pay.
+              </p>
+            </li>
+            <li className="fb-card fb-get">
+              <span className="fb-get-big">3 MIN</span>
+              <h3>Lightning mesh dispatch</h3>
+              <p>
+                Distributed proximity routing pairs you with the closest verified vehicle in your immediate sector, slashing wait times to an average 2.4 minutes.
+              </p>
+            </li>
+            <li className="fb-card fb-get">
+              <span className="fb-get-big">82%</span>
+              <h3>Driver revenue share</h3>
+              <p>
+                Drivers keep 82% of every fare, the highest payout in urban mobility. Happier drivers translate to cleaner vehicles and zero arbitrary ride cancellations.
+              </p>
+            </li>
+            <li className="fb-card fb-get">
+              <span className="fb-get-big">₹25K</span>
+              <h3>Weekly driver bonuses</h3>
+              <p>
+                Guaranteed shift incentives, electric vehicle fuel rebates, and instantaneous 60-second UPI payouts transferred directly to bank accounts.
+              </p>
+            </li>
+          </ul>
+        </section>
+
+        {/* SECTION 2: HOW IT WORKS */}
+        <section className="fb-section" aria-labelledby="steps" id="steps">
+          <header className="fb-head" data-fb-reveal="true">
+            <p className="fb-kicker">How it works</p>
+            <h2 className="fb-h2" id="steps">
+              5 steps. <span className="fb-brush">That's it.</span>
+            </h2>
+            <p className="fb-lead">
+              Never used an autonomous mobility mesh? You choose where to go, pick a comfort tier, and our telematics handle the rest.
+            </p>
+          </header>
+
+          {/* Key Visual Art */}
+          <img
+            alt="RushRide keyboard and dispatch controls"
+            className="fb-keys-art"
+            src="/buildathon/keys-890.webp"
+            width="890"
+            height="525"
+            loading="lazy"
+          />
+
+          <ol className="fb-steps" data-fb-stagger="true">
+            <li className="fb-step" id="step-1">
+              <span aria-hidden="true" className="fb-step-key fb-step-key-lime">
+                1
+              </span>
+              <div className="fb-step-body">
+                <h3>Set Pickup & Destination</h3>
+                <p>
+                  Search landmarks or drop a coordinate directly on the interactive transit map. The system automatically plots the lowest-traffic route.
+                </p>
+              </div>
+            </li>
+
+            <li className="fb-step" id="step-2">
+              <span aria-hidden="true" className="fb-step-key">
+                2
+              </span>
+              <div className="fb-step-body">
+                <h3>Choose Your Ride Tier</h3>
+                <p>
+                  Toggle between 6 distinct classes: from hyper-nimble single-rider Motos to comfortable Premier Sedans, 6-passenger XLs, and zero-emission Electric Greens.
+                </p>
+              </div>
+            </li>
+
+            <li className="fb-step" id="step-3">
+              <span aria-hidden="true" className="fb-step-key">
+                3
+              </span>
+              <div className="fb-step-body">
+                <h3>Instant Nearby Driver Match</h3>
+                <p>
+                  Our dispatch mesh matches you with a verified captain in under 12 seconds with live GPS telematics, ETA updates, and vehicle plate display.
+                </p>
+              </div>
+            </li>
+
+            <li className="fb-step" id="step-4">
+              <span aria-hidden="true" className="fb-step-key">
+                4
+              </span>
+              <div className="fb-step-body">
+                <h3>Secure 4-Digit Boarding OTP</h3>
+                <p>
+                  Verify your trip with an encrypted 4-digit PIN. Your driver cannot start the meter until you are safely seated onboard.
+                </p>
+              </div>
+            </li>
+
+            <li className="fb-step" id="step-5">
+              <span aria-hidden="true" className="fb-step-key fb-step-key-lime">
+                5
+              </span>
+              <div className="fb-step-body">
+                <h3>Arrival & One-Tap Cashless Settlement</h3>
+                <p>
+                  Arrive smoothly. Automatic GST-compliant receipts are generated with instant UPI, Credit Card, Corporate Billing, or Cash payment.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        {/* SECTION 3: 6 RIDE CLASSES / TRACKS */}
+        <section className="fb-section" aria-labelledby="tracks" id="classes">
+          <header className="fb-head" data-fb-reveal="true">
+            <p className="fb-kicker">Pick your lane</p>
+            <h2 className="fb-h2" id="tracks">
+              6 ride tiers. <span className="fb-brush">Pick one.</span>
+            </h2>
+            <p className="fb-lead">
+              You choose the ride tier for each trip. Need to bypass gridlock solo, or heading to the airport with family? We've got you covered.
+            </p>
+          </header>
+
+          <ul className="fb-tracks" data-fb-stagger="true">
+            {/* Track 1: Moto */}
+            <li className="fb-card fb-track">
+              <div aria-hidden="true" className="fb-track-top">
+                <span className="fb-track-icon">
+                  <Bike size={24} strokeWidth={2.4} />
+                </span>
+                <span className="fb-track-n">01</span>
+              </div>
+              <h3>Rush Moto</h3>
+              <p className="fb-track-line">Fastest urban micro-transit through congested traffic bottlenecks.</p>
+              <p className="fb-track-ideas-label">Highlights</p>
+              <ul className="fb-track-ideas">
+                <li>Solo passenger quick city commute.</li>
+                <li>Sanitized ISI certified helmet provided.</li>
+                <li>Base fare starting at ₹20 (₹8/km).</li>
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="fb-chip">Solo Rider</span>
+                <span className="fb-chip">Hyper Fast</span>
+                <span className="fb-chip">Under ₹50</span>
+              </div>
+            </li>
+
+            {/* Track 2: Mini / Go */}
+            <li className="fb-card fb-track">
+              <div aria-hidden="true" className="fb-track-top">
+                <span className="fb-track-icon">
+                  <Car size={24} strokeWidth={2.4} />
+                </span>
+                <span className="fb-track-n">02</span>
+              </div>
+              <h3>Rush Go / Mini</h3>
+              <p className="fb-track-line">Economical pocket-friendly hatchbacks for everyday campus & office travel.</p>
+              <p className="fb-track-ideas-label">Highlights</p>
+              <ul className="fb-track-ideas">
+                <li>Up to 4 passengers with compact luggage.</li>
+                <li>Full AC climate control included.</li>
+                <li>Base fare starting at ₹40 (₹12/km).</li>
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="fb-chip">Best Value</span>
+                <span className="fb-chip">Everyday AC</span>
+                <span className="fb-chip">Swift / i20</span>
+              </div>
+            </li>
+
+            {/* Track 3: Premier Sedan */}
+            <li className="fb-card fb-track">
+              <div aria-hidden="true" className="fb-track-top">
+                <span className="fb-track-icon">
+                  <Sparkles size={24} strokeWidth={2.4} />
+                </span>
+                <span className="fb-track-n">03</span>
+              </div>
+              <h3>Rush Premier Sedan</h3>
+              <p className="fb-track-line">High-comfort sedans with top-rated driver partners and silent cabins.</p>
+              <p className="fb-track-ideas-label">Highlights</p>
+              <ul className="fb-track-ideas">
+                <li>Extra rear legroom with USB charging ports.</li>
+                <li>Top 10% highest-rated captains only.</li>
+                <li>Base fare starting at ₹65 (₹16/km).</li>
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="fb-chip">Top Rated</span>
+                <span className="fb-chip">Business Ready</span>
+                <span className="fb-chip">Quiet Ride</span>
+              </div>
+            </li>
+
+            {/* Track 4: XL SUV */}
+            <li className="fb-card fb-track">
+              <div aria-hidden="true" className="fb-track-top">
+                <span className="fb-track-icon">
+                  <Users size={24} strokeWidth={2.4} />
+                </span>
+                <span className="fb-track-n">04</span>
+              </div>
+              <h3>Rush XL / SUV</h3>
+              <p className="fb-track-line">Spacious 6-passenger SUVs with oversized boot space for heavy luggage.</p>
+              <p className="fb-track-ideas-label">Highlights</p>
+              <ul className="fb-track-ideas">
+                <li>Seats up to 6 passengers comfortably.</li>
+                <li>Airport ready: holds 4 large suitcases.</li>
+                <li>Base fare starting at ₹95 (₹22/km).</li>
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="fb-chip">6 Seater</span>
+                <span className="fb-chip">Airport Cargo</span>
+                <span className="fb-chip">Family Trip</span>
+              </div>
+            </li>
+
+            {/* Track 5: Electric Green */}
+            <li className="fb-card fb-track">
+              <div aria-hidden="true" className="fb-track-top">
+                <span className="fb-track-icon">
+                  <Leaf size={24} strokeWidth={2.4} />
+                </span>
+                <span className="fb-track-n">05</span>
+              </div>
+              <h3>Rush Electric Green</h3>
+              <p className="fb-track-line">100% Zero-emission electric fleet powered by clean renewable energy.</p>
+              <p className="fb-track-ideas-label">Highlights</p>
+              <ul className="fb-track-ideas">
+                <li>Silent EV motors with zero engine vibration.</li>
+                <li>Automatic carbon offset certificate per trip.</li>
+                <li>Base fare starting at ₹60 (₹14/km).</li>
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="fb-chip">Zero Emission</span>
+                <span className="fb-chip">EV Clean</span>
+                <span className="fb-chip">Eco Certificate</span>
+              </div>
+            </li>
+
+            {/* Track 6: Black Elite */}
+            <li className="fb-card fb-track">
+              <div aria-hidden="true" className="fb-track-top">
+                <span className="fb-track-icon">
+                  <Crown size={24} strokeWidth={2.4} />
+                </span>
+                <span className="fb-track-n">06</span>
+              </div>
+              <h3>Rush Black Elite</h3>
+              <p className="fb-track-line">Premium luxury executive service with professionally trained chauffeurs.</p>
+              <p className="fb-track-ideas-label">Highlights</p>
+              <ul className="fb-track-ideas">
+                <li>European luxury sedans with leather seating.</li>
+                <li>Complimentary spring water & priority dispatch.</li>
+                <li>Base fare starting at ₹150 (₹30/km).</li>
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="fb-chip">VIP Chauffeur</span>
+                <span className="fb-chip">Corporate Invoicing</span>
+                <span className="fb-chip">Luxury Interior</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        {/* SECTION 4: RELIABILITY & SAFETY CHECKLIST */}
+        <section className="fb-section" aria-labelledby="rebuild" id="safety">
+          <header className="fb-head" data-fb-reveal="true">
+            <p className="fb-kicker">The secret weapon</p>
+            <h2 className="fb-h2" id="rebuild">
+              Engineered for <span className="fb-brush">safety & uptime.</span>
+            </h2>
+            <p className="fb-lead">
+              Every single trip on RushRide is backed by end-to-end telemetry, verified driver background vetting, and rigorous vehicle safety checks.
+            </p>
+          </header>
+
+          <ul className="fb-check" data-fb-stagger="true">
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>Comprehensive Driver KYC</h3>
+                <p>Every captain undergoes police verification, driving history audits, and in-person onboarding.</p>
+              </div>
+            </li>
+
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>24/7 Live Route Telematics</h3>
+                <p>Our operations system tracks vehicle coordinates in real time. Detours trigger safety checks.</p>
+              </div>
+            </li>
+
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>Guaranteed Upfront Price Lock</h3>
+                <p>No sudden meter bumps or unexpected tolls. The quote shown before booking is the final invoice.</p>
+              </div>
+            </li>
+
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>Masked Anonymous Calling</h3>
+                <p>Connect with your driver securely through virtual relays. Your real mobile number is never exposed.</p>
+              </div>
+            </li>
+
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>Instant Real-Time Link Sharing</h3>
+                <p>Share a live trip link with family and friends displaying driver details, car plate, and live GPS map.</p>
+              </div>
+            </li>
+
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>Universal Cashless Settlement</h3>
+                <p>Settle instantly via Google Pay, PhonePe, Paytm, RuPay, Cards, Wallets, or direct cash.</p>
+              </div>
+            </li>
+
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>Air-Conditioned Comfort Standard</h3>
+                <p>Standardized temperature policy across all sedans & SUVs for a sweat-free journey.</p>
+              </div>
+            </li>
+
+            <li className="fb-check-item">
+              <span aria-hidden="true" className="fb-tick">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
+                </svg>
+              </span>
+              <div>
+                <h3>24-Hour Lost & Found Hub</h3>
+                <p>Misplaced a bag or phone? Our rapid recovery bridge reconnects you directly with your driver partner.</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        {/* SECTION 5: SAFETY RULES & CRITERIA */}
+        <section className="fb-section" aria-labelledby="rules" id="rules">
+          <header className="fb-head" data-fb-reveal="true">
+            <p className="fb-kicker">Fair play</p>
+            <h2 className="fb-h2" id="rules">
+              Safety standards & <span className="fb-brush">rules.</span>
+            </h2>
+          </header>
+
+          <div className="fb-rules">
+            <div className="fb-card fb-card-ink fb-rule-list">
+              <h3>The Ground Rules</h3>
+              <ul>
+                <li>
+                  <strong>Zero Substance Tolerance:</strong> Immediate irreversible platform ban for any alcohol or drug infraction.
+                </li>
+                <li>
+                  <strong>19-Point Vehicle Inspection:</strong> Mandatory mechanical, tire, and brake safety clearance every 60 days.
+                </li>
+                <li>
+                  <strong>Mutual 2-Way Rating:</strong> Both riders and drivers must maintain a 4.5+ star rating to preserve active status.
+                </li>
+                <li>
+                  <strong>Zero Destination Discrimination:</strong> Equal service guarantee across all sectors without cherry-picking.
+                </li>
+                <li>
+                  <strong>Transparent Fare Breakdown:</strong> Drivers receive itemized statements showing exact trip earnings and net payouts.
+                </li>
+                <li>
+                  <strong>Fair Cancellation Shield:</strong> Riders are never charged cancellation fees if the driver is delayed by &gt; 5 minutes.
+                </li>
+              </ul>
+            </div>
+
+            <ul className="fb-judge" data-fb-stagger="true">
+              <li className="fb-card fb-judge-card">
+                <span aria-hidden="true" className="fb-judge-n">
+                  1
+                </span>
+                <h3>Vehicle Roadworthiness</h3>
+                <p>100% mechanically audited braking systems, dual front airbags, and clean interiors on every active car.</p>
+              </li>
+
+              <li className="fb-card fb-judge-card">
+                <span aria-hidden="true" className="fb-judge-n">
+                  2
+                </span>
+                <h3>Route Efficiency</h3>
+                <p>Telemetry-guided routing avoids congested bottlenecks, delivering you to your destination without pointless detours.</p>
+              </li>
+
+              <li className="fb-card fb-judge-card">
+                <span aria-hidden="true" className="fb-judge-n">
+                  3
+                </span>
+                <h3>Captain Professionalism</h3>
+                <p>Top-rated captains trained in defensive driving, courteous communication, and safe passenger assistance.</p>
+              </li>
+
+              <li className="fb-card fb-judge-card">
+                <span aria-hidden="true" className="fb-judge-n">
+                  4
+                </span>
+                <h3>Punctual Pickup</h3>
+                <p>Over 95% of dispatches reach the passenger pickup spot within ±90 seconds of predicted arrival.</p>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        {/* SECTION 6: TIMELINE & EARNINGS SPLIT */}
+        <section className="fb-section fb-split" aria-labelledby="timeline" id="shifts">
+          <div>
+            <header className="fb-head" data-fb-reveal="true">
+              <p className="fb-kicker">Key operating windows</p>
+              <h2 className="fb-h2" id="timeline">
+                <span className="fb-brush">Peak Shifts</span>
+              </h2>
+            </header>
+
+            <ol className="fb-time" data-fb-stagger="true">
+              <li>
+                <span className="fb-time-date">06:00 AM</span>
+                <div>
+                  <h3>Morning Commute & Airport Wave</h3>
+                  <p>Express lanes to IT parks, campuses, and railway terminals with zero surge price gouging.</p>
+                </div>
+              </li>
+
+              <li>
+                <span className="fb-time-date">12:30 PM</span>
+                <div>
+                  <h3>Midday City Express & Quick Errands</h3>
+                  <p>Rapid micro-transit dispatches for lunch runs, medical appointments, and business meetings.</p>
+                </div>
+              </li>
+
+              <li className="fb-time-hot">
+                <span className="fb-time-date">05:30 PM</span>
+                <div>
+                  <h3>Evening Metro Transit Rush</h3>
+                  <p>High-density vehicle clustering around office hubs with AI congestion bypass active.</p>
+                </div>
+              </li>
+
+              <li>
+                <span className="fb-time-date">11:00 PM</span>
+                <div>
+                  <h3>Night Owl & Red-Eye Flight Service</h3>
+                  <p>High-security night operations with active GPS escort telematics and 24/7 hotline support.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div>
+            <header className="fb-head" data-fb-reveal="true">
+              <p className="fb-kicker">Industry-highest payouts</p>
+              <h2 className="fb-h2" id="prizes">
+                <span className="fb-brush">Partner Tiers</span>
+              </h2>
+            </header>
+
+            <ul className="fb-prizes" data-fb-stagger="true">
+              <li className="fb-prize fb-prize-1">
+                <span className="fb-prize-place">Silver Captain</span>
+                <span className="fb-prize-amt">80% Net Share</span>
+              </li>
+
+              <li className="fb-prize fb-prize-2">
+                <span className="fb-prize-place">Gold Captain</span>
+                <span className="fb-prize-amt">82% Net Share</span>
+              </li>
+
+              <li className="fb-prize fb-prize-best">
+                <span className="fb-prize-place">Diamond Elite</span>
+                <span className="fb-prize-amt">85% + ₹10K Bonus</span>
+              </li>
+            </ul>
+
+            <p className="fb-small">
+              Diamond status is awarded to driver partners with 4.9+ star ratings, zero cancellations, and over 150 completed trips per month. Includes comprehensive accidental health cover and instant same-day settlement.
+            </p>
+          </div>
+        </section>
+
+        {/* SECTION 7: INTERACTIVE FAQ */}
+        <section className="fb-section fb-faq-wrap" aria-labelledby="faq" id="faq">
+          <header className="fb-head" data-fb-reveal="true">
+            <p className="fb-kicker">Questions</p>
+            <h2 className="fb-h2" id="faq">
+              Good <span className="fb-brush">questions.</span>
+            </h2>
+            <p className="fb-lead">
+              The things passengers and drivers ask us most. Tap any question to open it.
+            </p>
+          </header>
+
+          <div className="fb-faq" data-fb-reveal="true">
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  01
+                </span>
+                <span className="fb-faq-q">How is RushRide different from Uber or legacy apps?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                RushRide eliminates arbitrary 3x surge pricing, pays driver partners 82% direct revenue share (the highest in the mobility sector), and features an instant browser-based simulation engine with real-time GPS tracking.
+              </div>
+            </details>
+
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  02
+                </span>
+                <span className="fb-faq-q">How does the Zero Surge Pricing guarantee work?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                When demand spikes during rain or rush hours, RushRide rebalances driver capacity using intelligent mesh routing instead of price gouging passengers. The fare quoted at the time of booking is the exact fare charged upon dropoff.
+              </div>
+            </details>
+
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  03
+                </span>
+                <span className="fb-faq-q">What safety features are active during my trip?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                Every trip includes an encrypted 4-digit start OTP, 24/7 telematics route deviation alarms, masked phone relays, one-tap emergency link sharing with family, and a direct roadside SOS hotline.
+              </div>
+            </details>
+
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  04
+                </span>
+                <span className="fb-faq-q">Can I book a ride ahead of time for early airport flights?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                Yes! You can reserve rides up to 7 days in advance. Our dispatch protocol reserves a dedicated Gold or Diamond driver 30 minutes prior to your scheduled pickup time with guaranteed arrival.
+              </div>
+            </details>
+
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  05
+                </span>
+                <span className="fb-faq-q">How do driver payouts work and when do I get paid?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                Driver partners enjoy instant daily UPI cashouts. At the conclusion of your shift, tap 'Withdraw Payout' in the Driver Console and your funds land in your verified bank account in under 60 seconds.
+              </div>
+            </details>
+
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  06
+                </span>
+                <span className="fb-faq-q">What payment methods can I use?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                We accept all major UPI applications (Google Pay, PhonePe, Paytm), RuPay/Visa/Mastercard debit and credit cards, net banking, prepaid digital wallets, and physical cash upon trip completion.
+              </div>
+            </details>
+
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  07
+                </span>
+                <span className="fb-faq-q">Can I test both Rider and Driver modes?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                Yes! RushRide is a complete dual-console platform. Tap 'Switch Console' in the top header or visit <code>/role-select</code> to test booking trips as a passenger or accepting bookings as an active driver partner.
+              </div>
+            </details>
+
+            <details className="fb-faq-item" name="fb-faq">
+              <summary>
+                <span aria-hidden="true" className="fb-faq-n">
+                  08
+                </span>
+                <span className="fb-faq-q">What documents are required to drive with RushRide?</span>
+                <span aria-hidden="true" className="fb-faq-icon"></span>
+              </summary>
+              <div className="fb-faq-a">
+                You will need a valid Commercial Driving License, vehicle Registration Certificate (RC), active vehicle insurance policy, and fitness certificate. Onboarding takes less than 24 hours.
+              </div>
+            </details>
+          </div>
+        </section>
+
+        {/* SECTION 8: STUCK? ASK US */}
+        <section className="fb-section fb-help" aria-labelledby="help">
+          <div className="fb-help-card" data-fb-reveal="true">
+            <svg aria-hidden="true" className="fb-arrow fb-help-arrow" focusable="false" viewBox="0 0 120 80">
+              <path d="M8 70 L70 22" fill="none" stroke="currentColor" strokeDasharray="10 9" strokeLinecap="round" strokeWidth="5" />
+              <path d="M18 78 L58 47" fill="none" opacity=".7" stroke="currentColor" strokeDasharray="6 10" strokeLinecap="round" strokeWidth="4" />
+              <path d="M66 8 L108 6 L94 46 Z" fill="currentColor" />
+            </svg>
+
+            <h2 className="fb-h2" id="help">
+              Stuck? <span className="fb-brush">Ask us.</span>
+            </h2>
+            <p>Real dispatch operators, happy to help. No question is too basic.</p>
+
+            <div className="fb-ctas fb-ctas-center">
+              <Link to="/help" className="fb-btn fb-btn-lime">
+                Open Help Center
+                <span aria-hidden="true">→</span>
+              </Link>
+              <Link to="/role-select" className="fb-btn fb-btn-ink">
+                Test Role Selector
+                <span aria-hidden="true">↗</span>
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Role Dual-Experience Cards (Styled directly like WYD) */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#16123F] border border-[#3B38F5]/40 text-[#D4FF00] font-neo-mono text-[11px] font-bold uppercase tracking-wider mb-3">
-            <span>CHOOSE YOUR SIDE</span>
+        {/* SECTION 9: MASSIVE FINAL CTA */}
+        <section className="fb-final" id="fb-final" aria-labelledby="fb-final-title">
+          <svg aria-hidden="true" className="fb-speed fb-final-speed fb-final-speed-l" focusable="false" viewBox="0 0 160 60">
+            <path d="M4 52 L70 14 M30 58 L104 16 M70 56 L130 22" fill="none" stroke="currentColor" strokeDasharray="22 10" strokeLinecap="round" strokeWidth="5" />
+            <path d="M128 4 L156 8 L140 30 Z" fill="currentColor" />
+          </svg>
+          <svg aria-hidden="true" className="fb-speed fb-final-speed fb-final-speed-r" focusable="false" viewBox="0 0 160 60">
+            <path d="M4 52 L70 14 M30 58 L104 16 M70 56 L130 22" fill="none" stroke="currentColor" strokeDasharray="22 10" strokeLinecap="round" strokeWidth="5" />
+            <path d="M128 4 L156 8 L140 30 Z" fill="currentColor" />
+          </svg>
+
+          <div className="fb-final-inner" data-fb-reveal="true">
+            <p className="fb-final-kicker">6 Ride Tiers · 3-Min Average Pickup · Zero Surge Guarantee</p>
+
+            <h2 className="fb-final-big" id="fb-final-title">
+              <span>Ready to ride?</span>
+              <span className="fb-final-brush">Let's roll.</span>
+            </h2>
+
+            <div className="fb-final-count">
+              <span className="fb-final-count-label">Fleet Operations Ready:</span>
+              <div className="fb-mini-keys fb-mini-keys-lg">
+                <span className="fb-mini-key">
+                  <span className="fb-mini-num">1.4k</span>
+                  Active Cabs
+                </span>
+                <span className="fb-mini-key">
+                  <span className="fb-mini-num">2.4m</span>
+                  Avg Arrival
+                </span>
+                <span className="fb-mini-key fb-mini-key-seconds">
+                  <span className="fb-mini-num">99.8%</span>
+                  Fulfill
+                </span>
+              </div>
+            </div>
+
+            <div className="fb-ctas fb-ctas-center">
+              <Link to="/rider/book" className="fb-btn fb-btn-lime">
+                Launch Rider Console
+                <span aria-hidden="true">→</span>
+              </Link>
+              <Link to="/driver/dashboard" className="fb-btn fb-btn-ink">
+                Start Driving & Earning
+                <span aria-hidden="true">↗</span>
+              </Link>
+            </div>
           </div>
-          <h2 className="font-neo-heading text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">
-            TWO DEDICATED EXPERIENCES
-          </h2>
-          <p className="font-neo-grotesk text-sm sm:text-base text-[#A5A1CE] mt-2">
-            Rider and Driver roles share the exact same underlying simulated dispatch engine in your browser.
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="fb-foot">
+        <div className="fb-foot-inner">
+          <Link to="/" className="fb-logo fb-foot-logo">
+            <div className="w-7 h-7 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] flex items-center justify-center text-[#0b0630] font-black">
+              <Zap size={15} fill="#0b0630" />
+            </div>
+            <span>rushride</span>
+          </Link>
+
+          <p className="fb-foot-links">
+            <Link to="/rider">Rider Console</Link>
+            <Link to="/driver">Driver Console</Link>
+            <Link to="/role-select">Role Switcher</Link>
+            <Link to="/help">Help & Safety</Link>
+            <a href="#perks">Perks</a>
+            <a href="#classes">Vehicle Tiers</a>
           </p>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {/* Card 01: Rider */}
-          <div className="relative flex flex-col bg-white text-[#08071E] rounded-[28px] border-[2.5px] border-[#08071E] shadow-[6px_6px_0_#08071E] hover:shadow-[8px_8px_0_#3B38F5] transition-all duration-200 p-7 sm:p-9 overflow-hidden">
-            <div className="flex items-start justify-between mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#D4FF00] border-2 border-[#08071E] shadow-[3px_3px_0_#08071E] flex items-center justify-center">
-                <Navigation size={28} className="text-[#08071E]" strokeWidth={2.5} />
-              </div>
-              <span
-                className="font-neo-heading text-6xl sm:text-7xl font-black leading-none select-none tracking-tight text-transparent"
-                style={{ WebkitTextStroke: '2px #b8c0f5' }}
-              >
-                01
-              </span>
+          <div className="text-center md:text-right">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1a1450] text-[#d8fc38] text-[11px] font-neo-mono border border-white/10 mb-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Telematics Mesh Operational · 99.99% Uptime
             </div>
-
-            <h3 className="font-neo-heading text-2xl sm:text-3xl font-black uppercase text-[#08071E] tracking-tight">
-              RIDE WITH RIDEFLOW
-            </h3>
-            <p className="text-[#3B38F5] text-base font-neo-grotesk font-bold leading-snug mt-2.5 mb-6">
-              Find rides, compare fares across 3 vehicle categories, and track trips live.
+            <p className="text-xs text-[#e6e3ff]/60 font-neo-grotesk">
+              © 2026 RushRide Mobility Inc. Styled with high-contrast electric neo-brutalism.
             </p>
-
-            <div className="space-y-3 flex-1 mb-8">
-              {[
-                'Instant deterministic fare calculations with zero hidden fees.',
-                'Real-time ride lifecycle timeline: Searching, Arriving, In-Progress.',
-                'Save frequent college dorms, malls, and railway station favorites.',
-                'Flexible simulated payment choices: Cash, UPI, or Cards.',
-              ].map((feat, i) => (
-                <div key={i} className="flex items-start gap-3 bg-[#edf0ff]/80 rounded-2xl p-4 border border-[#3B38F5]/10">
-                  <ArrowRight size={16} strokeWidth={3} className="text-[#3B38F5] shrink-0 mt-0.5" />
-                  <span className="font-neo-grotesk text-sm font-medium text-[#08071E]">{feat}</span>
-                </div>
-              ))}
-            </div>
-
-            <Link
-              to="/auth/rider/login"
-              className="w-full py-3.5 rounded-xl border-2 border-[#08071E] bg-[#08071E] hover:bg-[#1b1248] text-[#D4FF00] font-neo-heading text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[3px_3px_0_#3B38F5] transition-all cursor-pointer"
-            >
-              <span>Continue as Rider</span>
-              <ArrowRight size={15} strokeWidth={3} />
-            </Link>
-          </div>
-
-          {/* Card 02: Driver */}
-          <div className="relative flex flex-col bg-white text-[#08071E] rounded-[28px] border-[2.5px] border-[#08071E] shadow-[6px_6px_0_#08071E] hover:shadow-[8px_8px_0_#3B38F5] transition-all duration-200 p-7 sm:p-9 overflow-hidden">
-            <div className="flex items-start justify-between mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#08071E] border-2 border-[#08071E] shadow-[3px_3px_0_#3B38F5] flex items-center justify-center">
-                <Car size={26} className="text-[#D4FF00]" strokeWidth={2.5} />
-              </div>
-              <span
-                className="font-neo-heading text-6xl sm:text-7xl font-black leading-none select-none tracking-tight text-transparent"
-                style={{ WebkitTextStroke: '2px #b8c0f5' }}
-              >
-                02
-              </span>
-            </div>
-
-            <h3 className="font-neo-heading text-2xl sm:text-3xl font-black uppercase text-[#08071E] tracking-tight">
-              DRIVE WITH RIDEFLOW
-            </h3>
-            <p className="text-[#3B38F5] text-base font-neo-grotesk font-bold leading-snug mt-2.5 mb-6">
-              Toggle availability online, accept incoming ride requests, and log simulated earnings.
-            </p>
-
-            <div className="space-y-3 flex-1 mb-8">
-              {[
-                'Prominent Online / Offline toggle with instant request queue pause.',
-                'Accept or reject incoming passenger bookings with immediate state sync.',
-                'Sequential trip management: Mark Arriving → Start Trip → Complete.',
-                'Recharts-powered daily & weekly earnings breakdown with 82% payout.',
-              ].map((feat, i) => (
-                <div key={i} className="flex items-start gap-3 bg-[#edf0ff]/80 rounded-2xl p-4 border border-[#3B38F5]/10">
-                  <ArrowRight size={16} strokeWidth={3} className="text-[#3B38F5] shrink-0 mt-0.5" />
-                  <span className="font-neo-grotesk text-sm font-medium text-[#08071E]">{feat}</span>
-                </div>
-              ))}
-            </div>
-
-            <Link
-              to="/auth/driver/login"
-              className="w-full py-3.5 rounded-xl border-2 border-[#08071E] bg-[#3B38F5] hover:bg-[#2e2bbd] text-white font-neo-heading text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[3px_3px_0_#08071E] transition-all cursor-pointer"
-            >
-              <span>Continue as Driver</span>
-              <ArrowRight size={15} strokeWidth={3} />
-            </Link>
           </div>
         </div>
-      </section>
+      </footer>
+
+      {/* FLOATING BOTTOM STICKY BAR */}
+      <div className="fb-bar" data-shown={showBar} role="region" aria-label="Quick dispatch bar">
+        <div className="fb-bar-inner">
+          <a className="fb-bar-brand" href="#main">
+            <div className="w-6 h-6 rounded-full bg-[#d8fc38] flex items-center justify-center text-[#0b0630]">
+              <Zap size={14} fill="#0b0630" />
+            </div>
+            <span>
+              Rush<b>Ride</b>
+            </span>
+          </a>
+
+          <p className="fb-bar-count">
+            <span className="fb-bar-label">Live ETA:</span>
+            <span className="text-xs font-neo-mono font-bold text-[#d8fc38] px-2 py-0.5 rounded bg-[#1a1450]">
+              2.4 mins
+            </span>
+          </p>
+
+          <Link to="/rider/book" className="fb-btn fb-btn-lime fb-btn-sm">
+            Book Ride
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

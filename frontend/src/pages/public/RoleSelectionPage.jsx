@@ -30,7 +30,7 @@ export default function RoleSelectionPage() {
       </div>
 
       <h1 className="font-neo-heading text-3xl sm:text-5xl font-black uppercase text-white tracking-tight text-center mb-3">
-        WELCOME TO <span className="text-[#D4FF00]">RIDEFLOW</span>
+        WELCOME TO <span className="text-[#D4FF00]">RUSHRIDE</span>
       </h1>
       <p className="font-neo-grotesk text-sm sm:text-base text-[#A5A1CE] text-center max-w-lg mb-10">
         Choose how you want to experience the platform. You can test both roles and switch dynamically at any time without resetting active trips.

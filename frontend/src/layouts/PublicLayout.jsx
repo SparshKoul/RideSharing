@@ -1,10 +1,24 @@
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Toast from '../components/Toast';
 import { Zap, Shield, ArrowRight } from 'lucide-react';
 
 export default function PublicLayout() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  if (isHome) {
+    return (
+      <div className="min-h-screen">
+        <main>
+          <Outlet />
+        </main>
+        <Toast />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#08071E] text-white selection:bg-[#D4FF00] selection:text-[#08071E] overflow-x-hidden">
       {/* Background Dot Pattern */}
@@ -37,22 +51,22 @@ export default function PublicLayout() {
             </div>
             <div>
               <div className="font-neo-heading text-lg font-black uppercase tracking-tight text-white">
-                RIDE<span className="text-[#D4FF00]">FLOW</span>
+                RUSH<span className="text-[#D4FF00]">RIDE</span>
               </div>
               <div className="font-neo-mono text-[10px] text-[#A5A1CE] uppercase tracking-wider">
-                Frontend-Only Ride-Sharing Prototype
+                Autonomous & High-Voltage Ride Protocol
               </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-neo-heading font-black uppercase text-[#A5A1CE]">
-            <Link to="/auth" className="hover:text-[#D4FF00] transition-colors">
+            <Link to="/role-select" className="hover:text-[#D4FF00] transition-colors">
               Role Selection
             </Link>
-            <Link to="/rider/dashboard" className="hover:text-[#D4FF00] transition-colors">
+            <Link to="/rider" className="hover:text-[#D4FF00] transition-colors">
               Rider Console
             </Link>
-            <Link to="/driver/dashboard" className="hover:text-[#D4FF00] transition-colors">
+            <Link to="/driver" className="hover:text-[#D4FF00] transition-colors">
               Driver Console
             </Link>
             <Link to="/help" className="hover:text-[#D4FF00] transition-colors">
@@ -61,10 +75,11 @@ export default function PublicLayout() {
           </div>
 
           <div className="font-neo-mono text-[11px] text-neutral-500 font-bold uppercase">
-            © 2026 RideFlow · Simulated Transit System
+            © 2026 RushRide Mobility Protocol
           </div>
         </div>
       </footer>
     </div>
   );
 }
+
