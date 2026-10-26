@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Toast from '../components/Toast';
-import { Zap, Shield, ArrowRight, Github } from 'lucide-react';
+import { Zap, Shield, ArrowRight } from 'lucide-react';
 
 export default function PublicLayout() {
   return (

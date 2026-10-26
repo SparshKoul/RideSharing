@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, Link } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import { User, LogOut, RotateCcw, Shield, HelpCircle, ChevronDown, Check } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useRide } from '../hooks/useRide';
