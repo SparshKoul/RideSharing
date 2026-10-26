@@ -12,6 +12,7 @@ import {
   Users,
   Compass,
   Check,
+  Navigation,
 } from 'lucide-react';
 import { MOCK_LOCATIONS } from '../../data/locations';
 import { RIDE_CATEGORIES } from '../../data/rideCategories';
