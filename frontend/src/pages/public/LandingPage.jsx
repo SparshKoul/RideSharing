@@ -38,21 +38,11 @@ export default function LandingPage() {
   const [pickup, setPickup] = useState(DEFAULT_PICKUP);
   const [destination, setDestination] = useState(DEFAULT_DESTINATION);
   const [selectedCategory, setSelectedCategory] = useState(RIDE_CATEGORIES[0]);
-  const [showBar, setShowBar] = useState(false);
   const [bookedFeedback, setBookedFeedback] = useState(false);
 
   // Live calculations
   const metrics = getRouteMetrics(pickup.id, destination.id);
   const estimatedFare = calculateFare(selectedCategory, metrics.distanceKm, metrics.durationMins);
-
-  // Scroll listener for bottom floating bar
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowBar(window.scrollY > 450);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleQuickBook = () => {
     setBookingDetails({
@@ -72,50 +62,41 @@ export default function LandingPage() {
   return (
     <div className="fb-page">
       {/* Skip Link */}
-      <a className="fb-skip" href="#main">
+      <a className="fb-skip" href="#main" style={{ zIndex: 60 }}>
         Skip to main content
       </a>
 
-      {/* Top Navigation */}
-      <header className="fb-top">
-        <Link to="/" className="fb-logo" aria-label="RushRide Mobility home">
-          <div className="w-8 h-8 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] flex items-center justify-center text-[#0b0630] font-black shadow-[2px_2px_0_#0b0630]">
-            <Zap size={18} fill="#0b0630" />
-          </div>
-          <span className="tracking-tight text-white flex items-center gap-1">
-            rush<span className="text-[#d8fc38]">ride</span>
-          </span>
-        </Link>
-
-        <nav className="fb-nav" aria-label="Page navigation">
-          <a href="#perks">Perks</a>
-          <a href="#steps">Steps</a>
-          <a href="#classes">Ride Tiers</a>
-          <a href="#safety">Safety</a>
-          <a href="#rules">Rules</a>
-          <a href="#shifts">Shifts</a>
-          <a href="#faq">FAQ</a>
-        </nav>
-
-        <div className="flex items-center gap-2.5 ml-auto">
-          <span className="fb-tag hidden sm:inline-block">METRO • 24/7 DISPATCH</span>
-          <Link
-            to="/role-select"
-            className="px-3.5 py-1.5 rounded-full border-2 border-white/30 hover:border-[#d8fc38] text-xs font-neo-grotesk font-bold text-white hover:text-[#d8fc38] transition-colors"
-          >
-            Switch Console
+      {/* Fixed Top Floating Navbar (Image 2 - Fixed from start to end) */}
+      <header className="fb-navbar-fixed" role="banner">
+        <div className="fb-bar-inner">
+          <Link to="/" className="fb-bar-brand" aria-label="RushRide Mobility home">
+            <div className="w-7 h-7 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] flex items-center justify-center text-[#0b0630] font-black shadow-[2px_2px_0_#0b0630]">
+              <Zap size={14} fill="#0b0630" />
+            </div>
+            <span>
+              Rush<b>Ride</b>
+            </span>
           </Link>
+
+          <p className="fb-bar-count">
+            <span className="fb-bar-label">Live ETA:</span>
+            <span className="text-xs font-neo-mono font-bold text-[#d8fc38] px-2.5 py-0.5 rounded bg-[#1a1450] border border-white/10 shadow-[1px_1px_0_#0b0630]">
+              2.4 mins
+            </span>
+          </p>
+
           <Link
-            to="/rider"
-            className="px-4 py-1.5 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] text-xs font-neo-heading font-black text-[#0b0630] shadow-[2px_2px_0_#0b0630] hover:-translate-y-0.5 active:translate-y-0.5 transition-all"
+            to="/rider/book"
+            className="fb-btn fb-btn-lime fb-btn-sm font-neo-heading text-xs font-black uppercase tracking-wider"
           >
-            Launch App →
+            Book Ride
+            <span aria-hidden="true">→</span>
           </Link>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main id="main">
+      <main id="main" className="pt-20">
         {/* HERO SECTION */}
         <section className="fb-hero" aria-labelledby="fb-title">
           <div className="fb-hero-copy">
@@ -1081,31 +1062,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* FLOATING BOTTOM STICKY BAR */}
-      <div className="fb-bar" data-shown={showBar} role="region" aria-label="Quick dispatch bar">
-        <div className="fb-bar-inner">
-          <a className="fb-bar-brand" href="#main">
-            <div className="w-6 h-6 rounded-full bg-[#d8fc38] flex items-center justify-center text-[#0b0630]">
-              <Zap size={14} fill="#0b0630" />
-            </div>
-            <span>
-              Rush<b>Ride</b>
-            </span>
-          </a>
-
-          <p className="fb-bar-count">
-            <span className="fb-bar-label">Live ETA:</span>
-            <span className="text-xs font-neo-mono font-bold text-[#d8fc38] px-2 py-0.5 rounded bg-[#1a1450]">
-              2.4 mins
-            </span>
-          </p>
-
-          <Link to="/rider/book" className="fb-btn fb-btn-lime fb-btn-sm">
-            Book Ride
-            <span aria-hidden="true">→</span>
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }
