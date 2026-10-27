@@ -1,34 +1,26 @@
 import { useAuthStore } from '../store/authStore';
+import { HARDCODED_CUSTOMER } from '../data/riders';
 
 export function useAuth() {
-  const role = useAuthStore((s) => s.role);
-  const rider = useAuthStore((s) => s.rider);
-  const driver = useAuthStore((s) => s.driver);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const rider = useAuthStore((s) => s.rider) || HARDCODED_CUSTOMER;
   const loginAsRider = useAuthStore((s) => s.loginAsRider);
-  const loginAsDriver = useAuthStore((s) => s.loginAsDriver);
   const switchRole = useAuthStore((s) => s.switchRole);
   const logout = useAuthStore((s) => s.logout);
   const updateRiderProfile = useAuthStore((s) => s.updateRiderProfile);
-  const updateDriverProfile = useAuthStore((s) => s.updateDriverProfile);
-  const updateVehicle = useAuthStore((s) => s.updateVehicle);
   const resetAuthData = useAuthStore((s) => s.resetAuthData);
 
   return {
-    role,
+    role: 'rider', // Customer role locked
     rider,
-    driver,
-    currentUser: role === 'driver' ? driver : rider,
-    isAuthenticated,
-    isRider: role === 'rider',
-    isDriver: role === 'driver',
+    customer: rider,
+    currentUser: rider,
+    isAuthenticated: true,
+    isRider: true,
+    isDriver: false,
     loginAsRider,
-    loginAsDriver,
     switchRole,
     logout,
     updateRiderProfile,
-    updateDriverProfile,
-    updateVehicle,
     resetAuthData,
   };
 }

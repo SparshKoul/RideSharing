@@ -34,8 +34,8 @@ const FAQS = [
   },
   {
     category: 'Platform Architecture',
-    question: 'Can I test both Rider and Driver roles at the same time?',
-    answer: 'Yes! Use the role switcher in the top navigation or profile menu. Switching between Rider and Driver preserves all ongoing trips and bookings in memory and localStorage so you can experience both perspectives simultaneously.',
+    question: 'How does the customer account work without switching IDs?',
+    answer: 'RushRide operates with dedicated hardcoded customer values. There is no need to switch IDs or toggle accounts. Driver matching and status progression are automatically handled in the customer view, letting you experience the full journey seamlessly.',
   },
 ];
 

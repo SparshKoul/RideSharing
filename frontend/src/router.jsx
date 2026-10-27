@@ -4,17 +4,13 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
 import RiderLayout from './layouts/RiderLayout';
-import DriverLayout from './layouts/DriverLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Public Pages
 import LandingPage from './pages/public/LandingPage';
-import RoleSelectionPage from './pages/public/RoleSelectionPage';
-import LoginPage from './pages/public/LoginPage';
-import RegisterPage from './pages/public/RegisterPage';
 import HelpPage from './pages/public/HelpPage';
 
-// Rider Pages
+// Customer (Rider) Pages
 import RiderDashboard from './pages/rider/RiderDashboard';
 import BookingPage from './pages/rider/BookingPage';
 import BookingConfirmation from './pages/rider/BookingConfirmation';
@@ -25,15 +21,6 @@ import PaymentsPage from './pages/rider/PaymentsPage';
 import FavoritesPage from './pages/rider/FavoritesPage';
 import RiderProfilePage from './pages/rider/RiderProfilePage';
 
-// Driver Pages
-import DriverDashboard from './pages/driver/DriverDashboard';
-import RideRequestsPage from './pages/driver/RideRequestsPage';
-import DriverActiveTripPage from './pages/driver/DriverActiveTripPage';
-import DriverTripsPage from './pages/driver/DriverTripsPage';
-import EarningsPage from './pages/driver/EarningsPage';
-import VehiclePage from './pages/driver/VehiclePage';
-import DriverProfilePage from './pages/driver/DriverProfilePage';
-
 export const router = createBrowserRouter([
   // Public Routes
   {
@@ -41,26 +28,30 @@ export const router = createBrowserRouter([
     element: <PublicLayout />,
     children: [
       { index: true, element: <LandingPage /> },
-      { path: 'role-select', element: <RoleSelectionPage /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'register', element: <RegisterPage /> },
+      // Direct redirects for role switching / auth routes - customer only mode
+      { path: 'role-select', element: <Navigate to="/rider/dashboard" replace /> },
+      { path: 'login', element: <Navigate to="/rider/dashboard" replace /> },
+      { path: 'register', element: <Navigate to="/rider/dashboard" replace /> },
+      { path: 'auth/*', element: <Navigate to="/rider/dashboard" replace /> },
       { path: 'help', element: <HelpPage /> },
     ],
   },
 
-  // Rider Routes
+  // Customer Routes
   {
     path: '/rider',
     element: (
-      <ProtectedRoute allowedRole="rider">
+      <ProtectedRoute>
         <RiderLayout />
       </ProtectedRoute>
     ),
     children: [
       { index: true, element: <RiderDashboard /> },
+      { path: 'dashboard', element: <RiderDashboard /> },
       { path: 'book', element: <BookingPage /> },
       { path: 'confirm', element: <BookingConfirmation /> },
       { path: 'active', element: <ActiveRidePage /> },
+      { path: 'ride/:id', element: <ActiveRidePage /> },
       { path: 'trips', element: <TripsPage /> },
       { path: 'trips/:id', element: <TripDetailsPage /> },
       { path: 'payments', element: <PaymentsPage /> },
@@ -69,24 +60,14 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Driver Routes
+  // Driver route redirects to Customer Console
   {
     path: '/driver',
-    element: (
-      <ProtectedRoute allowedRole="driver">
-        <DriverLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      { index: true, element: <DriverDashboard /> },
-      { path: 'requests', element: <RideRequestsPage /> },
-      { path: 'active', element: <DriverActiveTripPage /> },
-      { path: 'trips', element: <DriverTripsPage /> },
-      { path: 'trips/:id', element: <TripDetailsPage /> },
-      { path: 'earnings', element: <EarningsPage /> },
-      { path: 'vehicle', element: <VehiclePage /> },
-      { path: 'profile', element: <DriverProfilePage /> },
-    ],
+    element: <Navigate to="/rider/dashboard" replace />,
+  },
+  {
+    path: '/driver/*',
+    element: <Navigate to="/rider/dashboard" replace />,
   },
 
   // Fallback
