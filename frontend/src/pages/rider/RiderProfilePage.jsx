@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, ShieldCheck, RotateCcw, LogOut, Check, Star, Car } from 'lucide-react';
+import { User, Mail, Phone, ShieldCheck, RotateCcw, Check, Star, Award, Hash } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRide } from '../../hooks/useRide';
 import ConfirmModal from '../../components/ConfirmModal';
 
 export default function RiderProfilePage() {
-  const { currentUser, updateRiderProfile, logout, resetAuthData } = useAuth();
+  const { currentUser, updateRiderProfile, resetAuthData } = useAuth();
   const { resetAllRideData, addToast } = useRide();
 
   const [name, setName] = useState(currentUser?.name || '');
@@ -31,13 +31,13 @@ export default function RiderProfilePage() {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#16123F] border border-[#3B38F5]/40 text-[#D4FF00] font-neo-mono text-[10.5px] font-bold uppercase tracking-wider mb-2">
           <User size={12} className="text-[#D4FF00]" />
-          <span>ACCOUNT SETTINGS</span>
+          <span>CUSTOMER PROFILE</span>
         </div>
         <h1 className="font-neo-heading text-2xl sm:text-4xl font-black uppercase text-white tracking-tight">
-          RIDER PROFILE
+          CUSTOMER ACCOUNT
         </h1>
         <p className="font-neo-grotesk text-xs sm:text-sm text-[#A5A1CE]">
-          Manage your demo personal details, notification toggles, and session state.
+          Dedicated Customer Portal profile with fixed customer credentials.
         </p>
       </div>
 
@@ -55,12 +55,23 @@ export default function RiderProfilePage() {
               {currentUser?.name}
             </h2>
             <span className="font-neo-mono text-[10px] font-bold bg-[#D4FF00] text-[#08071E] px-2 py-0.5 rounded uppercase">
-              ★ {currentUser?.rating || 4.96} Rider
+              ★ {currentUser?.rating || 4.96} Customer
             </span>
           </div>
           <p className="font-neo-grotesk text-xs sm:text-sm text-[#A5A1CE]">
             {currentUser?.email} • {currentUser?.phone}
           </p>
+
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#3B38F5]/20 border border-[#3B38F5]/40 text-[#D4FF00] font-neo-mono text-[10px] font-bold uppercase">
+              <Hash size={12} />
+              <span>Customer ID: {currentUser?.id || 'CUST-8820'}</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white font-neo-mono text-[10px] font-bold uppercase">
+              <Award size={12} className="text-[#D4FF00]" />
+              <span>RushPrime Gold Tier</span>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -73,7 +84,7 @@ export default function RiderProfilePage() {
         <form onSubmit={handleSave} className="space-y-4">
           <div>
             <label className="block font-neo-mono text-[11px] font-black uppercase text-neutral-600 mb-1">
-              Full Name
+              Customer Name
             </label>
             <input
               type="text"
@@ -120,13 +131,13 @@ export default function RiderProfilePage() {
         </form>
       </div>
 
-      {/* Danger Zone: Reset & Logout */}
-      <div className="bg-[#121033] rounded-3xl border-2 border-red-500/30 p-6 sm:p-8 space-y-4">
-        <h3 className="font-neo-heading text-base font-black uppercase text-red-400 tracking-wider">
-          Demo Management Actions
+      {/* Defaults Management */}
+      <div className="bg-[#121033] rounded-3xl border-2 border-white/10 p-6 sm:p-8 space-y-4">
+        <h3 className="font-neo-heading text-base font-black uppercase text-white tracking-wider">
+          Hardcoded Account Controls
         </h3>
         <p className="font-neo-grotesk text-xs text-[#A5A1CE]">
-          Reset all locally stored demo accounts, booking drafts, and active rides to default seeds.
+          Reset customer ride history, draft bookings, and active trips back to the pristine hardcoded defaults.
         </p>
 
         <div className="flex flex-wrap gap-4 pt-2">
@@ -136,27 +147,18 @@ export default function RiderProfilePage() {
             className="px-5 py-3 rounded-xl border-2 border-amber-400 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 font-neo-heading text-xs font-black uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors"
           >
             <RotateCcw size={15} />
-            <span>Reset Demo State</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={logout}
-            className="px-5 py-3 rounded-xl border-2 border-red-500 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-neo-heading text-xs font-black uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors"
-          >
-            <LogOut size={15} />
-            <span>Sign Out Session</span>
+            <span>Restore Hardcoded Defaults</span>
           </button>
         </div>
       </div>
 
       <ConfirmModal
         isOpen={isResetModalOpen}
-        title="Reset Demo Data?"
-        description="This will clear all created rides, reset simulated balances, and restore seed test accounts."
-        confirmLabel="Yes, Reset All"
+        title="Restore Default State?"
+        description="This will restore all hardcoded customer values and reset sample trips to default seeds."
+        confirmLabel="Yes, Restore"
         cancelLabel="Cancel"
-        isDanger={true}
+        isDanger={false}
         onConfirm={handleReset}
         onClose={() => setIsResetModalOpen(false)}
       />

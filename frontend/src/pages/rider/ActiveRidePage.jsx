@@ -15,6 +15,7 @@ import {
   ArrowRight,
   Sparkles,
   HelpCircle,
+  Compass,
 } from 'lucide-react';
 import { useRide } from '../../hooks/useRide';
 import { useAuth } from '../../hooks/useAuth';
@@ -35,8 +36,8 @@ const CANCELLATION_REASONS = [
 export default function ActiveRidePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { rides, cancelRide, submitRideRating, switchRole } = useRide();
-  const { switchRole: switchAuthRole } = useAuth();
+  const { rides, cancelRide, submitRideRating, advanceRideSimulation } = useRide();
+  const { currentUser } = useAuth();
 
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedReason, setSelectedReason] = useState(CANCELLATION_REASONS[0]);
@@ -44,7 +45,7 @@ export default function ActiveRidePage() {
   const [ratingComment, setRatingComment] = useState('');
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
 
-  // Find ride by ID or fallback to latest
+  // Find ride by ID or fallback to latest active
   const ride = rides.find((r) => r.id === id) || rides[0];
 
   if (!ride) {
@@ -73,9 +74,9 @@ export default function ActiveRidePage() {
     setRatingSubmitted(true);
   };
 
-  const handleTestAsDriver = () => {
-    switchAuthRole('driver');
-    navigate('/driver/requests');
+  // Customer-side simulation advance without switching IDs
+  const handleAdvanceSimulation = () => {
+    advanceRideSimulation(ride.id);
   };
 
   return (
@@ -94,20 +95,35 @@ export default function ActiveRidePage() {
               <StatusBadge status={ride.status} size="sm" />
             </div>
             <p className="font-neo-grotesk text-xs text-[#A5A1CE]">
-              Created {formatDateTime(ride.createdAt)} • Category: {ride.category?.name}
+              Customer: {currentUser?.name} • Created {formatDateTime(ride.createdAt)} • Category: {ride.category?.name}
             </p>
           </div>
         </div>
 
-        {/* Action if Searching */}
-        {ride.status === 'searching' && (
-          <button
-            type="button"
-            onClick={handleTestAsDriver}
-            className="px-4 py-2 rounded-xl bg-[#D4FF00] text-[#08071E] border border-[#08071E] font-neo-heading text-xs font-black uppercase shadow-[2px_2px_0_#3B38F5] hover:scale-105 transition-transform cursor-pointer"
-          >
-            ⚡ Switch to Driver & Accept Ride
-          </button>
+        {/* Customer Simulation Controls (No ID Switching Needed) */}
+        {ride.status !== 'completed' && ride.status !== 'cancelled' && (
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={handleAdvanceSimulation}
+              className="px-4 py-2 rounded-xl bg-[#D4FF00] text-[#08071E] border-2 border-[#08071E] font-neo-heading text-xs font-black uppercase shadow-[2px_2px_0_#3B38F5] hover:scale-105 transition-transform cursor-pointer"
+            >
+              {ride.status === 'searching' && '⚡ Match Driver Instantly'}
+              {ride.status === 'driver_assigned' && '🚗 Simulate Driver Arrival'}
+              {ride.status === 'driver_arriving' && '🏁 Start Live Trip'}
+              {ride.status === 'in_progress' && '🎉 Complete Journey'}
+            </button>
+
+            {isCancellable && (
+              <button
+                type="button"
+                onClick={() => setIsCancelModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 font-neo-heading text-xs font-black uppercase transition-colors cursor-pointer"
+              >
+                Cancel Ride
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -121,14 +137,14 @@ export default function ActiveRidePage() {
                 Trip Status Timeline
               </span>
               <span className="font-neo-mono text-[10.5px] font-bold text-[#D4FF00] uppercase">
-                Synchronized State
+                Customer View
               </span>
             </div>
 
             {/* Stepper Timeline */}
             <div className="space-y-4">
               {[
-                { key: 'searching', title: '1. Searching for Drivers', desc: 'Request broadcasted to online demo drivers' },
+                { key: 'searching', title: '1. Searching for Drivers', desc: 'Matching with verified drivers nearby' },
                 { key: 'driver_assigned', title: '2. Driver Assigned', desc: 'Driver confirmed and preparing to navigate' },
                 { key: 'driver_arriving', title: '3. Driver Arriving', desc: 'Approaching your campus pickup location' },
                 { key: 'in_progress', title: '4. Trip In Progress', desc: 'On highway towards destination' },
@@ -169,7 +185,7 @@ export default function ActiveRidePage() {
                       >
                         {step.title}
                       </div>
-                      <div className="font-neo-grotesk text-xs text-[#A5A1CE]">
+                      <div className="font-neo-grotesk text-xs text-[#A5A1CE] mt-0.5">
                         {step.desc}
                       </div>
                     </div>
@@ -177,20 +193,9 @@ export default function ActiveRidePage() {
                 );
               })}
             </div>
-
-            {/* Cancel Button if cancellable */}
-            {isCancellable && (
-              <button
-                type="button"
-                onClick={() => setIsCancelModalOpen(true)}
-                className="w-full py-3 rounded-xl border-2 border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-neo-heading text-xs font-black uppercase tracking-wider transition-colors cursor-pointer"
-              >
-                Cancel Ride
-              </button>
-            )}
           </div>
 
-          {/* Assigned Driver Card */}
+          {/* Driver Information Card */}
           {ride.assignedDriver ? (
             <DriverCard driver={ride.assignedDriver} />
           ) : (
@@ -202,7 +207,7 @@ export default function ActiveRidePage() {
                 Finding Your Driver
               </h4>
               <p className="font-neo-grotesk text-xs text-[#A5A1CE] max-w-sm mx-auto">
-                Nearby drivers in Rajpura / Chandigarh have received your booking. You can switch to Driver mode to accept it!
+                Scanning high-rated drivers in your sector. A driver will be assigned automatically in moments.
               </p>
             </div>
           )}
@@ -221,7 +226,7 @@ export default function ActiveRidePage() {
                 <form onSubmit={handleSubmitRating} className="space-y-4">
                   <div>
                     <label className="block font-neo-mono text-[10.5px] font-bold text-neutral-500 uppercase mb-2">
-                      Star Rating (Simulated)
+                      Star Rating (Customer Feedback)
                     </label>
                     <div className="flex items-center gap-2">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -262,7 +267,7 @@ export default function ActiveRidePage() {
                 </form>
               ) : (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-neo-grotesk font-bold">
-                  ✓ Thank you! Your feedback has been simulated and saved.
+                  ✓ Thank you! Your feedback has been saved to your customer history.
                 </div>
               )}
             </div>
@@ -335,7 +340,7 @@ export default function ActiveRidePage() {
       <ConfirmModal
         isOpen={isCancelModalOpen}
         title="Cancel This Ride?"
-        description="Are you sure you want to cancel your simulated booking? You will not be charged any cancellation fee."
+        description="Are you sure you want to cancel your ride? You will not be charged any cancellation fee."
         confirmLabel="Confirm Cancellation"
         cancelLabel="Keep Booking"
         isDanger={true}

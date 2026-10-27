@@ -158,8 +158,8 @@ export default function LandingPage() {
                 Book a Ride Now
                 <span aria-hidden="true">→</span>
               </Link>
-              <Link to="/driver/dashboard" className="fb-btn fb-btn-ink">
-                Drive & Earn 82%
+              <Link to="/rider/dashboard" className="fb-btn fb-btn-ink">
+                Customer Console
                 <span aria-hidden="true">↗</span>
               </Link>
               <a href="#calculator" className="fb-btn fb-btn-ghost">
@@ -934,7 +934,7 @@ export default function LandingPage() {
                 <span aria-hidden="true" className="fb-faq-icon"></span>
               </summary>
               <div className="fb-faq-a">
-                Yes! RushRide is a complete dual-console platform. Tap 'Switch Console' in the top header or visit <code>/role-select</code> to test booking trips as a passenger or accepting bookings as an active driver partner.
+                RushRide provides a streamlined customer experience featuring instant automated driver matching, route tracking, and fair pricing without the hassle of account or ID switching.
               </div>
             </details>
 
@@ -972,8 +972,8 @@ export default function LandingPage() {
                 Open Help Center
                 <span aria-hidden="true">→</span>
               </Link>
-              <Link to="/role-select" className="fb-btn fb-btn-ink">
-                Test Role Selector
+              <Link to="/rider/dashboard" className="fb-btn fb-btn-ink">
+                Customer Dashboard
                 <span aria-hidden="true">↗</span>
               </Link>
             </div>
@@ -1022,8 +1022,8 @@ export default function LandingPage() {
                 Launch Rider Console
                 <span aria-hidden="true">→</span>
               </Link>
-              <Link to="/driver/dashboard" className="fb-btn fb-btn-ink">
-                Start Driving & Earning
+              <Link to="/rider/dashboard" className="fb-btn fb-btn-ink">
+                Customer Portal
                 <span aria-hidden="true">↗</span>
               </Link>
             </div>
@@ -1042,9 +1042,9 @@ export default function LandingPage() {
           </Link>
 
           <p className="fb-foot-links">
-            <Link to="/rider">Rider Console</Link>
-            <Link to="/driver">Driver Console</Link>
-            <Link to="/role-select">Role Switcher</Link>
+            <Link to="/rider/dashboard">Customer Console</Link>
+            <Link to="/rider/book">Book a Ride</Link>
+            <Link to="/rider/trips">My Trips</Link>
             <Link to="/help">Help & Safety</Link>
             <a href="#perks">Perks</a>
             <a href="#classes">Vehicle Tiers</a>

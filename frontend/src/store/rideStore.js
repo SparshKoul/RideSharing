@@ -4,19 +4,18 @@ import { MOCK_LOCATIONS, DEFAULT_PICKUP, DEFAULT_DESTINATION } from '../data/loc
 import { RIDE_CATEGORIES } from '../data/rideCategories';
 import { getRouteMetrics, calculateFare, calculateDriverEarnings } from '../utils/fareCalculator';
 import { DEFAULT_DEMO_DRIVER } from '../data/drivers';
-import { DEFAULT_DEMO_RIDER } from '../data/riders';
+import { HARDCODED_CUSTOMER } from '../data/riders';
 
-const RIDE_STORAGE_KEY = 'rideflow_rides_v2';
-const DRAFT_STORAGE_KEY = 'rideflow_booking_draft_v2';
-const DRIVER_STATUS_KEY = 'rideflow_driver_online_v2';
+const RIDE_STORAGE_KEY = 'rushride_customer_rides_v3';
+const DRAFT_STORAGE_KEY = 'rushride_customer_draft_v3';
 
-// Seed initial realistic completed/cancelled trips
+// Seed initial realistic completed/cancelled trips for the customer
 const SEED_RIDES = [
   {
     id: 'RF-7821',
-    riderId: 'rider-1',
-    riderName: 'Aryan Mehra',
-    riderRating: 4.96,
+    riderId: HARDCODED_CUSTOMER.id,
+    riderName: HARDCODED_CUSTOMER.name,
+    riderRating: HARDCODED_CUSTOMER.rating,
     pickup: MOCK_LOCATIONS[0], // Chitkara University
     destination: MOCK_LOCATIONS[3], // Elante Mall
     category: RIDE_CATEGORIES[1], // Comfort
@@ -35,9 +34,9 @@ const SEED_RIDES = [
   },
   {
     id: 'RF-6432',
-    riderId: 'rider-1',
-    riderName: 'Aryan Mehra',
-    riderRating: 4.96,
+    riderId: HARDCODED_CUSTOMER.id,
+    riderName: HARDCODED_CUSTOMER.name,
+    riderRating: HARDCODED_CUSTOMER.rating,
     pickup: MOCK_LOCATIONS[1], // Rajpura Bus Stand
     destination: MOCK_LOCATIONS[0], // Chitkara University
     category: RIDE_CATEGORIES[0], // Economy
@@ -55,9 +54,9 @@ const SEED_RIDES = [
   },
   {
     id: 'RF-5119',
-    riderId: 'rider-1',
-    riderName: 'Aryan Mehra',
-    riderRating: 4.96,
+    riderId: HARDCODED_CUSTOMER.id,
+    riderName: HARDCODED_CUSTOMER.name,
+    riderRating: HARDCODED_CUSTOMER.rating,
     pickup: MOCK_LOCATIONS[4], // Sector 17
     destination: MOCK_LOCATIONS[5], // Airport
     category: RIDE_CATEGORIES[2], // XL
@@ -75,9 +74,9 @@ const SEED_RIDES = [
   },
   {
     id: 'RF-4091',
-    riderId: 'rider-1',
-    riderName: 'Aryan Mehra',
-    riderRating: 4.96,
+    riderId: HARDCODED_CUSTOMER.id,
+    riderName: HARDCODED_CUSTOMER.name,
+    riderRating: HARDCODED_CUSTOMER.rating,
     pickup: MOCK_LOCATIONS[0], // Chitkara University
     destination: MOCK_LOCATIONS[2], // CDG Station
     category: RIDE_CATEGORIES[0], // Economy
@@ -96,7 +95,6 @@ const SEED_RIDES = [
 ];
 
 const initialRides = getStoredItem(RIDE_STORAGE_KEY, SEED_RIDES);
-const initialDriverOnline = getStoredItem(DRIVER_STATUS_KEY, true);
 
 const defaultMetrics = getRouteMetrics(DEFAULT_PICKUP.id, DEFAULT_DESTINATION.id);
 const defaultFare = calculateFare(RIDE_CATEGORIES[0], defaultMetrics.distanceKm, defaultMetrics.durationMins);
@@ -114,16 +112,15 @@ const initialDraft = getStoredItem(DRAFT_STORAGE_KEY, {
 export const useRideStore = create((set, get) => ({
   rides: initialRides,
   activeRideId: null, // ID of currently active ride in progress
-  driverOnline: initialDriverOnline,
+  driverOnline: true,
   bookingDraft: initialDraft,
   notifications: [],
-  rejectedRideIds: [], // Rides rejected by currently logged in driver
+  rejectedRideIds: [],
 
   // Set booking draft fields
   updateBookingDraft: (partialDraft) => {
     set((state) => {
       const merged = { ...state.bookingDraft, ...partialDraft };
-      // Recalculate metrics if pickup or destination changed
       if (partialDraft.pickup || partialDraft.destination || partialDraft.category) {
         const metrics = getRouteMetrics(merged.pickup?.id, merged.destination?.id);
         merged.distanceKm = metrics.distanceKm;
@@ -157,27 +154,21 @@ export const useRideStore = create((set, get) => ({
     });
   },
 
-  // Toggle Driver Online / Offline
   setDriverOnline: (isOnline) => {
     set({ driverOnline: isOnline });
-    setStoredItem(DRIVER_STATUS_KEY, isOnline);
-    get().addToast(
-      isOnline ? "You are now ONLINE. You'll receive live ride requests." : "You are now OFFLINE. New requests are paused.",
-      isOnline ? 'success' : 'info'
-    );
   },
 
-  // Rider creates a ride booking
+  // Customer creates a ride booking with hardcoded customer identity
   createRideRequest: (draftOverrides = null) => {
     const draft = draftOverrides || get().bookingDraft;
     const rideId = `RF-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newRide = {
       id: rideId,
-      riderId: DEFAULT_DEMO_RIDER.id,
-      riderName: DEFAULT_DEMO_RIDER.name,
-      riderPhone: DEFAULT_DEMO_RIDER.phone,
-      riderRating: DEFAULT_DEMO_RIDER.rating,
+      riderId: HARDCODED_CUSTOMER.id,
+      riderName: HARDCODED_CUSTOMER.name,
+      riderPhone: HARDCODED_CUSTOMER.phone,
+      riderRating: HARDCODED_CUSTOMER.rating,
       pickup: draft.pickup,
       destination: draft.destination,
       category: draft.category,
@@ -203,64 +194,95 @@ export const useRideStore = create((set, get) => ({
       };
     });
 
-    get().addToast(`Ride request ${rideId} created! Looking for nearby drivers...`, 'success');
+    get().addToast(`Ride request ${rideId} created! Matching with nearby drivers...`, 'success');
+
+    // Auto-match nearby driver after 2.5s without needing to switch to a driver ID
+    setTimeout(() => {
+      const current = get().rides.find((r) => r.id === rideId);
+      if (current && current.status === 'searching') {
+        get().autoAssignDriver(rideId);
+      }
+    }, 2500);
+
     return newRide;
   },
 
-  // Driver accepts request
-  driverAcceptRide: (rideId, driver = DEFAULT_DEMO_DRIVER) => {
-    const state = get();
-    if (!state.driverOnline) {
-      get().addToast("Cannot accept rides while offline! Switch to Online first.", "error");
-      return false;
-    }
-
-    // Check if driver already has an active trip
-    const existingActive = state.rides.find(
-      (r) => r.assignedDriver?.id === driver.id && ['driver_assigned', 'driver_arriving', 'in_progress'].includes(r.status)
-    );
-    if (existingActive) {
-      get().addToast("You already have an active trip in progress!", "error");
-      return false;
-    }
-
-    let acceptedRide = null;
+  // System auto-assigns driver for customer
+  autoAssignDriver: (rideId, driver = DEFAULT_DEMO_DRIVER) => {
+    let assigned = false;
     set((s) => {
       const updatedRides = s.rides.map((ride) => {
         if (ride.id === rideId && ride.status === 'searching') {
-          acceptedRide = {
+          assigned = true;
+          return {
             ...ride,
             status: 'driver_assigned',
             assignedDriver: driver,
           };
-          return acceptedRide;
         }
         return ride;
       });
-
       setStoredItem(RIDE_STORAGE_KEY, updatedRides);
-      return {
-        rides: updatedRides,
-        activeRideId: rideId,
-      };
+      return { rides: updatedRides };
     });
 
-    if (acceptedRide) {
-      get().addToast(`Ride ${rideId} accepted! Navigate to pickup location.`, 'success');
-      return true;
+    if (assigned) {
+      get().addToast(`Driver ${driver.name} accepted your ride! Heading towards pickup.`, 'success');
     }
-    return false;
   },
 
-  // Driver rejects request
-  driverRejectRide: (rideId) => {
-    set((state) => ({
-      rejectedRideIds: [...state.rejectedRideIds, rideId],
-    }));
-    get().addToast("Ride request dismissed.", "info");
+  // Advance ride to next simulation stage directly for customer
+  advanceRideSimulation: (rideId) => {
+    const targetRide = get().rides.find((r) => r.id === rideId);
+    if (!targetRide) return;
+
+    if (targetRide.status === 'searching') {
+      get().autoAssignDriver(rideId);
+    } else if (targetRide.status === 'driver_assigned') {
+      set((state) => {
+        const updated = state.rides.map((r) =>
+          r.id === rideId ? { ...r, status: 'driver_arriving' } : r
+        );
+        setStoredItem(RIDE_STORAGE_KEY, updated);
+        return { rides: updated };
+      });
+      get().addToast("Driver has arrived at your pickup spot!", "info");
+    } else if (targetRide.status === 'driver_arriving') {
+      set((state) => {
+        const updated = state.rides.map((r) =>
+          r.id === rideId ? { ...r, status: 'in_progress' } : r
+        );
+        setStoredItem(RIDE_STORAGE_KEY, updated);
+        return { rides: updated };
+      });
+      get().addToast("Trip started! En route to destination.", "success");
+    } else if (targetRide.status === 'in_progress') {
+      set((state) => {
+        const finalFare = targetRide.estimatedFare;
+        const updated = state.rides.map((r) =>
+          r.id === rideId
+            ? {
+                ...r,
+                status: 'completed',
+                finalFare,
+                completedAt: new Date().toISOString(),
+              }
+            : r
+        );
+        setStoredItem(RIDE_STORAGE_KEY, updated);
+        return { rides: updated, activeRideId: null };
+      });
+      get().addToast("You have reached your destination! Trip completed.", "success");
+    }
   },
 
-  // Driver marks as arriving at pickup
+  // Driver accepts request (kept for internal compatibility)
+  driverAcceptRide: (rideId, driver = DEFAULT_DEMO_DRIVER) => {
+    get().autoAssignDriver(rideId, driver);
+    return true;
+  },
+
+  driverRejectRide: () => {},
   driverMarkArriving: (rideId) => {
     set((state) => {
       const updatedRides = state.rides.map((r) =>
@@ -269,10 +291,7 @@ export const useRideStore = create((set, get) => ({
       setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides };
     });
-    get().addToast("Status updated: Arriving at pickup spot.", "info");
   },
-
-  // Driver starts the trip
   driverStartTrip: (rideId) => {
     set((state) => {
       const updatedRides = state.rides.map((r) =>
@@ -281,36 +300,9 @@ export const useRideStore = create((set, get) => ({
       setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides };
     });
-    get().addToast("Trip started! Driving towards destination.", "success");
   },
-
-  // Driver completes the trip
   driverCompleteTrip: (rideId) => {
-    set((state) => {
-      const targetRide = state.rides.find((r) => r.id === rideId);
-      const finalFare = targetRide ? targetRide.estimatedFare : 0;
-      const driverEarnings = calculateDriverEarnings(finalFare);
-
-      const updatedRides = state.rides.map((r) => {
-        if (r.id === rideId) {
-          return {
-            ...r,
-            status: 'completed',
-            finalFare,
-            driverEarnings,
-            completedAt: new Date().toISOString(),
-          };
-        }
-        return r;
-      });
-
-      setStoredItem(RIDE_STORAGE_KEY, updatedRides);
-      return {
-        rides: updatedRides,
-        activeRideId: null,
-      };
-    });
-    get().addToast("Trip successfully completed! Fare added to earnings.", "success");
+    get().advanceRideSimulation(rideId);
   },
 
   // Rider cancels the ride
@@ -340,7 +332,7 @@ export const useRideStore = create((set, get) => ({
     get().addToast("Thank you for your rating!", "success");
   },
 
-  // Create quick sample request for testing Driver requests page
+  // Quick sample request
   createSampleRequest: () => {
     const randomCategory = RIDE_CATEGORIES[Math.floor(Math.random() * RIDE_CATEGORIES.length)];
     const pIndex = Math.floor(Math.random() * MOCK_LOCATIONS.length);
@@ -384,7 +376,6 @@ export const useRideStore = create((set, get) => ({
   resetAllRideData: () => {
     removeStoredItem(RIDE_STORAGE_KEY);
     removeStoredItem(DRAFT_STORAGE_KEY);
-    removeStoredItem(DRIVER_STATUS_KEY);
     set({
       rides: SEED_RIDES,
       activeRideId: null,
@@ -392,6 +383,6 @@ export const useRideStore = create((set, get) => ({
       bookingDraft: initialDraft,
       rejectedRideIds: [],
     });
-    get().addToast("Demo ride data has been reset to defaults.", "info");
+    get().addToast("Customer ride data has been restored to default seeds.", "info");
   },
 }));

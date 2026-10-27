@@ -13,6 +13,8 @@ export function useRide() {
   const swapPickupAndDestination = useRideStore((s) => s.swapPickupAndDestination);
   const setDriverOnline = useRideStore((s) => s.setDriverOnline);
   const createRideRequest = useRideStore((s) => s.createRideRequest);
+  const autoAssignDriver = useRideStore((s) => s.autoAssignDriver);
+  const advanceRideSimulation = useRideStore((s) => s.advanceRideSimulation);
   const driverAcceptRide = useRideStore((s) => s.driverAcceptRide);
   const driverRejectRide = useRideStore((s) => s.driverRejectRide);
   const driverMarkArriving = useRideStore((s) => s.driverMarkArriving);
@@ -25,38 +27,16 @@ export function useRide() {
   const removeToast = useRideStore((s) => s.removeToast);
   const resetAllRideData = useRideStore((s) => s.resetAllRideData);
 
-  const currentRole = useAuthStore((s) => s.role);
-  const driverProfile = useAuthStore((s) => s.driver);
-
-  // Active ride currently assigned or tracked
+  // Active ride currently assigned or tracked for the customer
   const activeRide = rides.find((r) => r.id === activeRideId) ||
     rides.find((r) => ['searching', 'driver_assigned', 'driver_arriving', 'in_progress'].includes(r.status)) ||
     null;
-
-  // Driver's active assigned trip
-  const driverActiveTrip = rides.find(
-    (r) => r.assignedDriver?.id === driverProfile?.id && ['driver_assigned', 'driver_arriving', 'in_progress'].includes(r.status)
-  ) || null;
-
-  // Pending incoming requests visible to online driver
-  const pendingRequests = driverOnline
-    ? rides.filter((r) => r.status === 'searching' && !rejectedRideIds.includes(r.id))
-    : [];
 
   // Completed trips
   const completedTrips = rides.filter((r) => r.status === 'completed');
   const cancelledTrips = rides.filter((r) => r.status === 'cancelled');
 
-  // Driver metrics
-  const driverCompletedTrips = rides.filter(
-    (r) => r.status === 'completed' && r.assignedDriver?.id === driverProfile?.id
-  );
-  const driverTotalEarnings = driverCompletedTrips.reduce((sum, r) => sum + (r.driverEarnings || 0), 0);
-  const driverTodayEarnings = driverCompletedTrips
-    .filter((r) => new Date(r.completedAt).toDateString() === new Date().toDateString())
-    .reduce((sum, r) => sum + (r.driverEarnings || 0), 0) + (driverProfile?.todayEarnings || 0);
-
-  // Rider metrics
+  // Customer metrics
   const riderCompletedTrips = rides.filter((r) => r.status === 'completed');
   const riderTotalSpent = riderCompletedTrips.reduce((sum, r) => sum + (r.finalFare || 0), 0);
 
@@ -64,22 +44,18 @@ export function useRide() {
     rides,
     activeRide,
     activeRideId: activeRide?.id || null,
-    driverActiveTrip,
-    pendingRequests,
     completedTrips,
     cancelledTrips,
-    driverOnline,
     bookingDraft,
     notifications,
-    driverTotalEarnings,
-    driverTodayEarnings,
-    driverCompletedTripsCount: driverCompletedTrips.length,
     riderTotalSpent,
     riderCompletedTripsCount: riderCompletedTrips.length,
     updateBookingDraft,
     swapPickupAndDestination,
     setDriverOnline,
     createRideRequest,
+    autoAssignDriver,
+    advanceRideSimulation,
     driverAcceptRide,
     driverRejectRide,
     driverMarkArriving,
