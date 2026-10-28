@@ -285,7 +285,7 @@ export default function RiderDashboard() {
                       {formatCurrency(trip.finalFare || trip.estimatedFare)}
                     </div>
                     <div className="font-neo-mono text-[9px] text-[#A5A1CE] uppercase font-bold">
-                      {trip.paymentMethod}
+                      {trip.category?.name || 'Ride'}
                     </div>
                   </div>
                   <ArrowRight size={16} className="text-neutral-400" />

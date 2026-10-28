@@ -22,7 +22,9 @@ import {
   Share2,
   ExternalLink,
   HelpCircle,
-  AlertCircle
+  AlertCircle,
+  Menu,
+  X
 } from 'lucide-react';
 import { MOCK_LOCATIONS, DEFAULT_PICKUP, DEFAULT_DESTINATION } from '../../data/locations';
 import { RIDE_CATEGORIES } from '../../data/rideCategories';
@@ -39,6 +41,7 @@ export default function LandingPage() {
   const [destination, setDestination] = useState(DEFAULT_DESTINATION);
   const [selectedCategory, setSelectedCategory] = useState(RIDE_CATEGORIES[0]);
   const [bookedFeedback, setBookedFeedback] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Live calculations
   const metrics = getRouteMetrics(pickup.id, destination.id);
@@ -78,21 +81,72 @@ export default function LandingPage() {
             </span>
           </Link>
 
-          <p className="fb-bar-count">
-            <span className="fb-bar-label">Live ETA:</span>
-            <span className="text-xs font-neo-mono font-bold text-[#d8fc38] px-2.5 py-0.5 rounded bg-[#1a1450] border border-white/10 shadow-[1px_1px_0_#0b0630]">
-              2.4 mins
-            </span>
-          </p>
+          {/* Main Navigation Links */}
+          <nav className="fb-navbar-nav" aria-label="Main Navigation">
+            <a href="#classes" className="fb-navlink">Ride Classes</a>
+            <a href="#steps" className="fb-navlink">How It Works</a>
+            <a href="#perks" className="fb-navlink">Perks</a>
+            <a href="#safety" className="fb-navlink">Safety</a>
+            <a href="#faq" className="fb-navlink">FAQ</a>
+            <Link to="/help" className="fb-navlink">Support</Link>
+          </nav>
 
-          <Link
-            to="/rider/book"
-            className="fb-btn fb-btn-lime fb-btn-sm font-neo-heading text-xs font-black uppercase tracking-wider"
-          >
-            Book Ride
-            <span aria-hidden="true">→</span>
-          </Link>
+          <div className="fb-navbar-actions">
+            <Link
+              to="/rider/dashboard"
+              className="fb-navlink fb-navlink-accent hidden sm:inline-flex"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/rider/book"
+              className="fb-btn fb-btn-lime fb-btn-sm font-neo-heading text-xs font-black uppercase tracking-wider"
+            >
+              Book Ride
+              <span aria-hidden="true">→</span>
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="fb-nav-toggle md:hidden"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile dropdown menu */}
+        {mobileMenuOpen && (
+          <div className="fb-mobile-nav-menu">
+            <a href="#classes" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
+              Ride Classes
+            </a>
+            <a href="#steps" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
+              How It Works
+            </a>
+            <a href="#perks" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
+              Perks
+            </a>
+            <a href="#safety" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
+              Safety & Security
+            </a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
+              FAQ
+            </a>
+            <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
+              Support
+            </Link>
+            <Link
+              to="/rider/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="fb-mobile-navlink text-[#d8fc38] font-black"
+            >
+              Customer Console →
+            </Link>
+          </div>
+        )}
       </header>
 
       {/* Main Content Area */}
@@ -770,7 +824,7 @@ export default function LandingPage() {
 
             <ol className="fb-time" data-fb-stagger="true">
               <li>
-                <span className="fb-time-date">06:00 AM</span>
+                <span className="fb-time-date">6:00 AM</span>
                 <div>
                   <h3>Morning Commute & Airport Wave</h3>
                   <p>Express lanes to IT parks, campuses, and railway terminals with zero surge price gouging.</p>
@@ -786,7 +840,7 @@ export default function LandingPage() {
               </li>
 
               <li className="fb-time-hot">
-                <span className="fb-time-date">05:30 PM</span>
+                <span className="fb-time-date">5:30 PM</span>
                 <div>
                   <h3>Evening Metro Transit Rush</h3>
                   <p>High-density vehicle clustering around office hubs with AI congestion bypass active.</p>

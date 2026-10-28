@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Navigation,
   Clock,
-  CreditCard,
   Bookmark,
   User,
   HelpCircle,
@@ -19,14 +18,13 @@ export default function Sidebar() {
     { to: '/rider/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/rider/book', label: 'Book a Ride', icon: Navigation },
     { to: '/rider/trips', label: 'My Trips', icon: Clock },
-    { to: '/rider/payments', label: 'Payments', icon: CreditCard },
     { to: '/rider/favorites', label: 'Saved Places', icon: Bookmark },
     { to: '/rider/profile', label: 'Customer Profile', icon: User },
     { to: '/help', label: 'Help Center', icon: HelpCircle },
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 shrink-0 bg-[#08071E] border-r-2 border-white/10 min-h-[calc(100vh-65px)] p-4">
+    <aside className="hidden md:flex flex-col w-64 shrink-0 bg-[#0c1033]/90 backdrop-blur-sm border-r-2 border-white/10 min-h-[calc(100vh-65px)] p-4">
       {/* Role Banner Card */}
       <div className="p-3.5 rounded-2xl bg-[#121033] border-2 border-white/10 mb-5">
         <div className="flex items-center justify-between mb-1">

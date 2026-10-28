@@ -5,8 +5,6 @@ import {
   MapPin,
   Car,
   Clock,
-  ShieldCheck,
-  CreditCard,
   Check,
   ArrowRight,
   ArrowLeft,
@@ -17,28 +15,18 @@ import { useRide } from '../../hooks/useRide';
 import { useAuth } from '../../hooks/useAuth';
 import { formatCurrency, formatDistance, formatDuration } from '../../utils/formatters';
 
-const PAYMENT_OPTIONS = [
-  { id: 'UPI', name: 'UPI / QR', desc: 'Google Pay, PhonePe, Paytm (Simulated)', badge: 'INSTANT' },
-  { id: 'Cash', name: 'Cash to Driver', desc: 'Pay mock cash upon trip arrival', badge: 'ZERO FEE' },
-  { id: 'Card', name: 'Debit / Credit Card', desc: 'Visa, Mastercard mock card', badge: 'REWARDS' },
-];
-
 export default function BookingConfirmation() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { bookingDraft, updateBookingDraft, createRideRequest } = useRide();
-  const [selectedPayment, setSelectedPayment] = useState(bookingDraft.paymentMethod || 'UPI');
+  const { bookingDraft, createRideRequest } = useRide();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleConfirm = () => {
     setIsSubmitting(true);
-    // Update payment method in draft
-    updateBookingDraft({ paymentMethod: selectedPayment });
 
     setTimeout(() => {
       const createdRide = createRideRequest({
         ...bookingDraft,
-        paymentMethod: selectedPayment,
       });
       setIsSubmitting(false);
       navigate(`/rider/ride/${createdRide.id}`);
@@ -57,7 +45,7 @@ export default function BookingConfirmation() {
           CONFIRM YOUR BOOKING
         </h1>
         <p className="font-neo-grotesk text-xs sm:text-sm text-[#A5A1CE]">
-          Review route specifications, payment preference, and request a driver.
+          Review route specifications and request a driver.
         </p>
       </div>
 
@@ -132,53 +120,6 @@ export default function BookingConfirmation() {
               Deterministic Calc
             </span>
           </div>
-        </div>
-
-        {/* Payment Method Selector */}
-        <div>
-          <label className="block font-neo-heading text-xs sm:text-sm font-black uppercase text-[#08071E] tracking-wider mb-3">
-            Select Mock Payment Method
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {PAYMENT_OPTIONS.map((opt) => {
-              const isSelected = selectedPayment === opt.id;
-              return (
-                <div
-                  key={opt.id}
-                  onClick={() => setSelectedPayment(opt.id)}
-                  className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? 'bg-[#08071E] text-white border-[#08071E] shadow-[3px_3px_0_#3B38F5]'
-                      : 'bg-[#F5F6FF] text-[#08071E] border-neutral-300 hover:border-[#08071E]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-neo-heading text-sm font-black uppercase">
-                      {opt.name}
-                    </span>
-                    <span
-                      className={`font-neo-mono text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                        isSelected ? 'bg-[#D4FF00] text-[#08071E]' : 'bg-neutral-200 text-neutral-700'
-                      }`}
-                    >
-                      {opt.badge}
-                    </span>
-                  </div>
-                  <p className={`text-[11px] font-neo-grotesk ${isSelected ? 'text-[#A5A1CE]' : 'text-neutral-500'}`}>
-                    {opt.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Prototype Disclaimer */}
-        <div className="p-3.5 rounded-xl bg-[#edf0ff] border border-[#3B38F5]/30 text-xs font-neo-grotesk text-[#08071E] flex items-center gap-2.5">
-          <ShieldCheck size={18} className="text-[#3B38F5] shrink-0" />
-          <span>
-            <strong>Simulated Payment:</strong> No bank or card transaction will take place. This is a frontend demo record.
-          </span>
         </div>
 
         {/* Action Buttons */}

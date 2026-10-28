@@ -2,14 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, Activity, UserCheck } from 'lucide-react';
 import { useRide } from '../hooks/useRide';
-import NotificationPanel from './NotificationPanel';
 import ProfileDropdown from './ProfileDropdown';
 
 export default function Navbar() {
   const { activeRide } = useRide();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#08071E]/95 backdrop-blur-md border-b-2 border-white/10 shadow-[0_4px_20px_rgba(8,7,30,0.5)] px-4 sm:px-6 lg:px-8 py-3">
+    <header className="sticky top-0 z-50 w-full bg-[#0c1033]/95 backdrop-blur-md border-b-2 border-white/10 shadow-[0_4px_20px_rgba(10,14,46,0.6)] px-4 sm:px-6 lg:px-8 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div className="flex items-center gap-3">
@@ -39,6 +38,34 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* Center Desktop Navlinks */}
+        <nav className="hidden lg:flex items-center gap-1" aria-label="Quick Navigation">
+          <Link
+            to="/"
+            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-white hover:bg-white/5 transition-colors"
+          >
+            Home
+          </Link>
+          <Link
+            to="/rider/book"
+            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-[#d8fc38] hover:bg-white/5 transition-colors"
+          >
+            Book Ride
+          </Link>
+          <Link
+            to="/rider/trips"
+            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-white hover:bg-white/5 transition-colors"
+          >
+            Trips
+          </Link>
+          <Link
+            to="/help"
+            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-white hover:bg-white/5 transition-colors"
+          >
+            Help
+          </Link>
+        </nav>
+
         {/* Right side controls */}
         <div className="flex items-center gap-2.5 sm:gap-3.5">
           {/* Customer Badge */}
@@ -46,9 +73,6 @@ export default function Navbar() {
             <UserCheck size={13} className="text-[#D4FF00]" />
             <span>Customer Verified</span>
           </div>
-
-          {/* Notification Bell */}
-          <NotificationPanel />
 
           {/* Profile Dropdown */}
           <ProfileDropdown />

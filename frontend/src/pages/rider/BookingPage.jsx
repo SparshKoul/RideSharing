@@ -193,12 +193,6 @@ export default function BookingPage() {
                 <span className="text-[#A5A1CE]">Estimated Trip Duration</span>
                 <span className="font-bold text-white">{formatDuration(bookingDraft.durationMins)}</span>
               </div>
-              <div className="flex justify-between pt-2">
-                <span className="text-[#A5A1CE]">Payment Option</span>
-                <span className="font-bold text-[#D4FF00] uppercase font-neo-mono">
-                  {bookingDraft.paymentMethod || 'UPI'}
-                </span>
-              </div>
             </div>
 
             <div className="p-4 rounded-2xl bg-[#08071E] border border-white/10 flex items-center justify-between">

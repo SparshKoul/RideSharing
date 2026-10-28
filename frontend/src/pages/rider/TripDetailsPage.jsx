@@ -47,7 +47,7 @@ export default function TripDetailsPage() {
               <StatusBadge status={trip.status} />
             </div>
             <p className="font-neo-grotesk text-xs text-[#A5A1CE]">
-              Completed on {formatDateTime(trip.createdAt)} • Payment Method: {trip.paymentMethod}
+              Completed on {formatDateTime(trip.createdAt)}
             </p>
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function TripDetailsPage() {
                   Total Paid
                 </span>
                 <span className="font-neo-mono text-[10px] text-neutral-500 uppercase">
-                  {trip.paymentMethod} • Zero real charge
+                  Total Trip Fare • Zero real charge
                 </span>
               </div>
               <span className="font-neo-heading text-2xl font-black text-[#08071E]">
