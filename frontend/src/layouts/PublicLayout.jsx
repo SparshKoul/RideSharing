@@ -51,7 +51,7 @@ export default function PublicLayout() {
             </div>
             <div>
               <div className="font-neo-heading text-lg font-black uppercase tracking-tight text-white">
-                RUSH<span className="text-[#D4FF00]">RIDE</span>
+                RIDE<span className="text-[#D4FF00]">EZZ</span>
               </div>
               <div className="font-neo-mono text-[10px] text-[#A5A1CE] uppercase tracking-wider">
                 Autonomous & High-Voltage Ride Protocol
@@ -75,7 +75,7 @@ export default function PublicLayout() {
           </div>
 
           <div className="font-neo-mono text-[11px] text-neutral-500 font-bold uppercase">
-            © 2026 RushRide Mobility Protocol
+            © 2026 RideEzz Mobility Protocol
           </div>
         </div>
       </footer>

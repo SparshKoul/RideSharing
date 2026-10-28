@@ -1,4 +1,4 @@
-# RideFlow (RushRide) ⚡
+# RideEzz ⚡
 
 > **High-Voltage, Neo-Brutalist Ride-Sharing Platform**  
 > Frontend UI replicated & inspired by **[omnirush.ai/buildathon](https://omnirush.ai/buildathon)**.
@@ -25,7 +25,7 @@
 
 ## ⚡ Overview
 
-**RideFlow** is a modern, frontend-only ride-sharing platform that delivers realistic dual-console experiences for **Riders** and **Drivers**. Built with React 19, Vite, and Zustand, it features:
+**RideEzz** is a modern, frontend-only ride-sharing platform that delivers realistic dual-console experiences for **Riders** and **Drivers**. Built with React 19, Vite, and Zustand, it features:
 - **Instant Dual-Console Switching:** Seamlessly switch between booking trips as a passenger and accepting bookings as a driver.
 - **Unified Trip State:** A ride requested in the Rider Console is immediately available in the Driver Console with real-time status transitions.
 - **Deterministic Pricing Engine:** Upfront, zero-surge price calculation across 6 vehicle classes.

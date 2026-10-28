@@ -72,12 +72,12 @@ export default function LandingPage() {
       {/* Fixed Top Floating Navbar (Image 2 - Fixed from start to end) */}
       <header className="fb-navbar-fixed" role="banner">
         <div className="fb-bar-inner">
-          <Link to="/" className="fb-bar-brand" aria-label="RushRide Mobility home">
+          <Link to="/" className="fb-bar-brand" aria-label="RideEzz Mobility home">
             <div className="w-7 h-7 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] flex items-center justify-center text-[#0b0630] font-black shadow-[2px_2px_0_#0b0630]">
               <Zap size={14} fill="#0b0630" />
             </div>
             <span>
-              Rush<b>Ride</b>
+              Ride<b>Ezz</b>
             </span>
           </Link>
 
@@ -158,7 +158,7 @@ export default function LandingPage() {
 
             <h1 className="fb-h1" id="fb-title">
               <span>Next-Gen</span>
-              <span>RushRide</span>
+              <span>RideEzz</span>
               <span className="fb-year">2026</span>
               <svg aria-hidden="true" className="fb-burst fb-h1-burst" focusable="false" viewBox="0 0 60 60">
                 <path d="M8 40 L22 30 M14 14 L28 24 M38 6 L36 22" stroke="currentColor" strokeLinecap="round" strokeWidth="6" />
@@ -366,7 +366,7 @@ export default function LandingPage() {
               <span className="fb-get-big">₹0</span>
               <h3>Surge pricing spikes</h3>
               <p>
-                Unlike legacy ride apps that triple fares the minute raindrops fall, RushRide guarantees deterministic price ceilings. What you see is what you pay.
+                Unlike legacy ride apps that triple fares the minute raindrops fall, RideEzz guarantees deterministic price ceilings. What you see is what you pay.
               </p>
             </li>
             <li className="fb-card fb-get">
@@ -408,7 +408,7 @@ export default function LandingPage() {
           {/* Key Visual Art - Ride Platform Vehicle */}
           <div className="fb-car-art-container">
             <img
-              alt="RushRide electric vehicle fleet"
+              alt="RideEzz electric vehicle fleet"
               className="fb-car-art"
               src="/images/rideshare-car.jpg"
               width="890"
@@ -505,7 +505,7 @@ export default function LandingPage() {
                 </span>
                 <span className="fb-track-n">01</span>
               </div>
-              <h3>Rush Moto</h3>
+              <h3>RideEzz Moto</h3>
               <p className="fb-track-line">Fastest urban micro-transit through congested traffic bottlenecks.</p>
               <p className="fb-track-ideas-label">Highlights</p>
               <ul className="fb-track-ideas">
@@ -528,7 +528,7 @@ export default function LandingPage() {
                 </span>
                 <span className="fb-track-n">02</span>
               </div>
-              <h3>Rush Go / Mini</h3>
+              <h3>RideEzz Go / Mini</h3>
               <p className="fb-track-line">Economical pocket-friendly hatchbacks for everyday campus & office travel.</p>
               <p className="fb-track-ideas-label">Highlights</p>
               <ul className="fb-track-ideas">
@@ -551,7 +551,7 @@ export default function LandingPage() {
                 </span>
                 <span className="fb-track-n">03</span>
               </div>
-              <h3>Rush Premier Sedan</h3>
+              <h3>RideEzz Premier Sedan</h3>
               <p className="fb-track-line">High-comfort sedans with top-rated driver partners and silent cabins.</p>
               <p className="fb-track-ideas-label">Highlights</p>
               <ul className="fb-track-ideas">
@@ -574,7 +574,7 @@ export default function LandingPage() {
                 </span>
                 <span className="fb-track-n">04</span>
               </div>
-              <h3>Rush XL / SUV</h3>
+              <h3>RideEzz XL / SUV</h3>
               <p className="fb-track-line">Spacious 6-passenger SUVs with oversized boot space for heavy luggage.</p>
               <p className="fb-track-ideas-label">Highlights</p>
               <ul className="fb-track-ideas">
@@ -597,7 +597,7 @@ export default function LandingPage() {
                 </span>
                 <span className="fb-track-n">05</span>
               </div>
-              <h3>Rush Electric Green</h3>
+              <h3>RideEzz Electric Green</h3>
               <p className="fb-track-line">100% Zero-emission electric fleet powered by clean renewable energy.</p>
               <p className="fb-track-ideas-label">Highlights</p>
               <ul className="fb-track-ideas">
@@ -620,7 +620,7 @@ export default function LandingPage() {
                 </span>
                 <span className="fb-track-n">06</span>
               </div>
-              <h3>Rush Black Elite</h3>
+              <h3>RideEzz Black Elite</h3>
               <p className="fb-track-line">Premium luxury executive service with professionally trained chauffeurs.</p>
               <p className="fb-track-ideas-label">Highlights</p>
               <ul className="fb-track-ideas">
@@ -645,7 +645,7 @@ export default function LandingPage() {
               Engineered for <span className="fb-brush">safety & uptime.</span>
             </h2>
             <p className="fb-lead">
-              Every single trip on RushRide is backed by end-to-end telemetry, verified driver background vetting, and rigorous vehicle safety checks.
+              Every single trip on RideEzz is backed by end-to-end telemetry, verified driver background vetting, and rigorous vehicle safety checks.
             </p>
           </header>
 
@@ -912,11 +912,11 @@ export default function LandingPage() {
                 <span aria-hidden="true" className="fb-faq-n">
                   01
                 </span>
-                <span className="fb-faq-q">How is RushRide different from Uber or legacy apps?</span>
+                <span className="fb-faq-q">How is RideEzz different from Uber or legacy apps?</span>
                 <span aria-hidden="true" className="fb-faq-icon"></span>
               </summary>
               <div className="fb-faq-a">
-                RushRide eliminates arbitrary 3x surge pricing, pays driver partners 82% direct revenue share (the highest in the mobility sector), and features an instant browser-based simulation engine with real-time GPS tracking.
+                RideEzz eliminates arbitrary 3x surge pricing, pays driver partners 82% direct revenue share (the highest in the mobility sector), and features an instant browser-based simulation engine with real-time GPS tracking.
               </div>
             </details>
 
@@ -929,7 +929,7 @@ export default function LandingPage() {
                 <span aria-hidden="true" className="fb-faq-icon"></span>
               </summary>
               <div className="fb-faq-a">
-                When demand spikes during rain or rush hours, RushRide rebalances driver capacity using intelligent mesh routing instead of price gouging passengers. The fare quoted at the time of booking is the exact fare charged upon dropoff.
+                When demand spikes during rain or rush hours, RideEzz rebalances driver capacity using intelligent mesh routing instead of price gouging passengers. The fare quoted at the time of booking is the exact fare charged upon dropoff.
               </div>
             </details>
 
@@ -994,7 +994,7 @@ export default function LandingPage() {
                 <span aria-hidden="true" className="fb-faq-icon"></span>
               </summary>
               <div className="fb-faq-a">
-                RushRide provides a streamlined customer experience featuring instant automated driver matching, route tracking, and fair pricing without the hassle of account or ID switching.
+                RideEzz provides a streamlined customer experience featuring instant automated driver matching, route tracking, and fair pricing without the hassle of account or ID switching.
               </div>
             </details>
 
@@ -1003,7 +1003,7 @@ export default function LandingPage() {
                 <span aria-hidden="true" className="fb-faq-n">
                   08
                 </span>
-                <span className="fb-faq-q">What documents are required to drive with RushRide?</span>
+                <span className="fb-faq-q">What documents are required to drive with RideEzz?</span>
                 <span aria-hidden="true" className="fb-faq-icon"></span>
               </summary>
               <div className="fb-faq-a">
@@ -1098,7 +1098,7 @@ export default function LandingPage() {
             <div className="w-7 h-7 rounded-full bg-[#d8fc38] border-2 border-[#0b0630] flex items-center justify-center text-[#0b0630] font-black">
               <Zap size={15} fill="#0b0630" />
             </div>
-            <span>rushride</span>
+            <span>rideezz</span>
           </Link>
 
           <p className="fb-foot-links">
@@ -1116,7 +1116,7 @@ export default function LandingPage() {
               Telematics Mesh Operational · 99.99% Uptime
             </div>
             <p className="text-xs text-[#e6e3ff]/60 font-neo-grotesk">
-              © 2026 RushRide Mobility Inc. Styled with high-contrast electric neo-brutalism.
+              © 2026 RideEzz Mobility Inc. Styled with high-contrast electric neo-brutalism.
             </p>
           </div>
         </div>

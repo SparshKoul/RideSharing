@@ -69,7 +69,7 @@ export default function RiderProfilePage() {
             </span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white font-neo-mono text-[10px] font-bold uppercase">
               <Award size={12} className="text-[#D4FF00]" />
-              <span>RushPrime Gold Tier</span>
+              <span>RideEzz Prime Gold Tier</span>
             </span>
           </div>
         </div>

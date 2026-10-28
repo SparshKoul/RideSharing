@@ -2,7 +2,7 @@ export const DEMO_DRIVERS = [
   {
     id: 'driver-1',
     name: 'Vikram Malhotra',
-    email: 'vikram.driver@rideflow.demo',
+    email: 'vikram.driver@rideezz.demo',
     phone: '+91 98765 43210',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     rating: 4.92,
@@ -24,7 +24,7 @@ export const DEMO_DRIVERS = [
   {
     id: 'driver-2',
     name: 'Gurpreet Singh',
-    email: 'gurpreet.driver@rideflow.demo',
+    email: 'gurpreet.driver@rideezz.demo',
     phone: '+91 98123 67890',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     rating: 4.88,
@@ -46,7 +46,7 @@ export const DEMO_DRIVERS = [
   {
     id: 'driver-3',
     name: 'Priya Sharma',
-    email: 'priya.driver@rideflow.demo',
+    email: 'priya.driver@rideezz.demo',
     phone: '+91 97654 32109',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
     rating: 4.95,

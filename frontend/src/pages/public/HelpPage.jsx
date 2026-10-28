@@ -47,18 +47,18 @@ const CONTACT_CHANNELS = {
     hours: '24/7 Immediate Telematics & Dispatch Help',
   },
   email: {
-    primary: 'support@rushride.com',
-    secondary: 'contact@rushride.com',
+    primary: 'support@rideezz.com',
+    secondary: 'contact@rideezz.com',
     sla: 'Under 15 minutes average response',
   },
   instagram: {
-    handle: '@rushride.mobility',
-    url: 'https://instagram.com/rushride.mobility',
-    displayUrl: 'instagram.com/rushride.mobility',
+    handle: '@rideezz.mobility',
+    url: 'https://instagram.com/rideezz.mobility',
+    displayUrl: 'instagram.com/rideezz.mobility',
     desc: 'Live transit stories, fleet drop alerts & direct DM support',
   },
   location: {
-    address: 'Level 4, RushRide Mobility Towers, Cyber City, Sector 24, Metro Core 110001',
+    address: 'Level 4, RideEzz Mobility Towers, Cyber City, Sector 24, Metro Core 110001',
     landmark: 'Adjacent to Cyber Gateway Metro Interchange',
   },
 };
@@ -66,7 +66,7 @@ const CONTACT_CHANNELS = {
 const FAQS = [
   {
     category: 'Booking & Fares',
-    question: 'How do I book a simulated ride on RushRide?',
+    question: 'How do I book a simulated ride on RideEzz?',
     answer: 'Select your pickup and destination from our curated locations (e.g. Chitkara University to Elante Mall), choose between any of our 6 tiers (Moto, Mini, Comfort, Premier, XL, Green EV), inspect live fare calculations, and click "Confirm Booking". Your trip is immediately routed to the dispatch mesh.',
   },
   {
@@ -82,7 +82,7 @@ const FAQS = [
   {
     category: 'Support & Inquiries',
     question: 'What is the fastest way to get in touch with customer support?',
-    answer: 'For instant support during an active ride, call our 24/7 hotline at +91 1800 202 2026 or tap in-ride SOS. For billing queries, lost items, or general feedback, email support@rushride.com or DM us on Instagram @rushride.mobility.',
+    answer: 'For instant support during an active ride, call our 24/7 hotline at +91 1800 202 2026 or tap in-ride SOS. For billing queries, lost items, or general feedback, email support@rideezz.com or DM us on Instagram @rideezz.mobility.',
   },
   {
     category: 'Driver Workflow',
@@ -97,11 +97,11 @@ const FAQS = [
   {
     category: 'Platform Architecture',
     question: 'Why are authentication and payments simulated?',
-    answer: 'RushRide is a frontend-only architectural showcase running entirely within your browser. No backend APIs, real payment gateways, or live GPS telemetry are connected. All demo accounts, driver earnings, and trips persist in browser localStorage.',
+    answer: 'RideEzz is a frontend-only architectural showcase running entirely within your browser. No backend APIs, real payment gateways, or live GPS telemetry are connected. All demo accounts, driver earnings, and trips persist in browser localStorage.',
   },
   {
     category: 'Safety & Emergency',
-    question: 'What safety features are integrated into RushRide trips?',
+    question: 'What safety features are integrated into RideEzz trips?',
     answer: 'Every trip requires a secure 4-digit boarding OTP before the captain can initiate transit. Active rides include live GPS route tracking, one-tap emergency SOS broadcast, driver credential verification, and automated GST-compliant digital invoicing.',
   },
 ];
@@ -303,7 +303,7 @@ export default function HelpPage() {
 
             <div className="flex items-center gap-2 pt-4 border-t border-white/10">
               <a
-                href={`mailto:${CONTACT_CHANNELS.email.primary}?subject=RushRide%20Support%20Inquiry`}
+                href={`mailto:${CONTACT_CHANNELS.email.primary}?subject=RideEzz%20Support%20Inquiry`}
                 className="flex-1 py-2.5 px-3 rounded-xl bg-white hover:bg-neutral-100 text-[#08071E] font-neo-heading text-xs font-black uppercase tracking-wider text-center border-2 border-[#08071E] shadow-[2px_2px_0_#08071E] active:translate-y-0.5 transition-all flex items-center justify-center gap-1.5"
               >
                 <Mail size={14} strokeWidth={2.5} />
@@ -420,7 +420,7 @@ export default function HelpPage() {
                 Ticket Reference: {submittedTicket.id}
               </p>
               <p className="font-neo-grotesk text-xs text-neutral-300 max-w-md mx-auto mb-5 leading-relaxed">
-                Thank you for contacting RushRide. Our operations dispatch center has received your request regarding{' '}
+                Thank you for contacting RideEzz. Our operations dispatch center has received your request regarding{' '}
                 <span className="text-white font-bold">{submittedTicket.category}</span>. An automated confirmation has been routed to your email.
               </p>
               <button

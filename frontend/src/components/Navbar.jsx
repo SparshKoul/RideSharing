@@ -18,7 +18,7 @@ export default function Navbar() {
             </div>
             <div>
               <div className="font-neo-heading text-lg sm:text-xl font-black uppercase tracking-tight text-white leading-none">
-                RUSH<span className="text-[#d8fc38]">RIDE</span>
+                RIDE<span className="text-[#d8fc38]">EZZ</span>
               </div>
               <div className="font-neo-mono text-[9px] font-bold text-[#A5A1CE] uppercase tracking-widest leading-none mt-0.5">
                 CUSTOMER CONSOLE

@@ -27,7 +27,7 @@ export default function DriverProfilePage() {
 
   const [formData, setFormData] = useState({
     name: user?.name || 'Gurpreet Singh',
-    email: user?.email || 'gurpreet.driver@rideflow.com',
+    email: user?.email || 'gurpreet.driver@rideezz.com',
     phone: user?.phone || '+91 98141 55678',
     license: user?.licenseNumber || 'DL-042018009214',
     experience: user?.experience || '4.5 Years',

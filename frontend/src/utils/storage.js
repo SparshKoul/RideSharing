@@ -9,7 +9,7 @@ export function getStoredItem(key, defaultValue = null) {
     if (item === null) return defaultValue;
     return JSON.parse(item);
   } catch (error) {
-    console.warn(`[RideFlow Storage] Error reading ${key}:`, error);
+    console.warn(`[RideEzz Storage] Error reading ${key}:`, error);
     return memoryStorage[key] !== undefined ? memoryStorage[key] : defaultValue;
   }
 }
@@ -18,7 +18,7 @@ export function setStoredItem(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
-    console.warn(`[RideFlow Storage] Error writing ${key}:`, error);
+    console.warn(`[RideEzz Storage] Error writing ${key}:`, error);
     memoryStorage[key] = value;
   }
 }

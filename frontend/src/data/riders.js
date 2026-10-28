@@ -1,16 +1,16 @@
 /**
- * Hardcoded Customer Profile for RushRide
+ * Hardcoded Customer Profile for RideEzz
  * Dedicated customer-only data with fixed ID and verified account details.
  */
 export const HARDCODED_CUSTOMER = {
   id: 'CUST-8820',
   name: 'Aryan Mehra',
-  email: 'aryan.customer@rushride.com',
+  email: 'aryan.customer@rideezz.com',
   phone: '+91 99887 66554',
   avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
   rating: 4.96,
   role: 'customer',
-  accountType: 'RushPrime Gold Customer',
+  accountType: 'RideEzz Prime Gold Customer',
   memberSince: 'March 2024',
   totalRides: 38,
   totalSpent: 8940,

@@ -89,7 +89,7 @@ export default function RegisterPage() {
       };
 
       loginAsRider(newRiderProfile);
-      addToast('Rider demo account created! Welcome to RideFlow.', 'success');
+      addToast('Rider demo account created! Welcome to RideEzz.', 'success');
       navigate('/rider/dashboard');
     }
   };
