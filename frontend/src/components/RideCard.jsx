@@ -78,8 +78,6 @@ export default function RideCard({
             <span>{formatDistance(ride.distanceKm)}</span>
             <span>•</span>
             <span>{formatDuration(ride.durationMins)}</span>
-            <span>•</span>
-            <span className="uppercase font-neo-mono text-[10px] text-[#D4FF00]">{ride.paymentMethod}</span>
           </div>
 
           {/* Amount */}

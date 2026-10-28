@@ -290,7 +290,7 @@ export default function ActiveRidePage() {
                 Ride Specifications
               </span>
               <span className="font-neo-mono text-[10.5px] font-bold text-[#D4FF00] uppercase">
-                {ride.paymentMethod}
+                {ride.category?.name}
               </span>
             </div>
 

@@ -96,7 +96,7 @@ export default function TripsPage() {
                     {formatCurrency(trip.finalFare || trip.estimatedFare)}
                   </div>
                   <div className="font-neo-mono text-[10px] text-[#A5A1CE] uppercase mt-1">
-                    {formatDistance(trip.distanceKm)} • {formatDuration(trip.durationMins)} • {trip.paymentMethod}
+                    {formatDistance(trip.distanceKm)} • {formatDuration(trip.durationMins)}
                   </div>
                 </div>
 

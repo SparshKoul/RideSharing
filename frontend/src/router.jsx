@@ -17,7 +17,6 @@ import BookingConfirmation from './pages/rider/BookingConfirmation';
 import ActiveRidePage from './pages/rider/ActiveRidePage';
 import TripsPage from './pages/rider/TripsPage';
 import TripDetailsPage from './pages/rider/TripDetailsPage';
-import PaymentsPage from './pages/rider/PaymentsPage';
 import FavoritesPage from './pages/rider/FavoritesPage';
 import RiderProfilePage from './pages/rider/RiderProfilePage';
 
@@ -54,7 +53,7 @@ export const router = createBrowserRouter([
       { path: 'ride/:id', element: <ActiveRidePage /> },
       { path: 'trips', element: <TripsPage /> },
       { path: 'trips/:id', element: <TripDetailsPage /> },
-      { path: 'payments', element: <PaymentsPage /> },
+      { path: 'payments', element: <Navigate to="/rider/dashboard" replace /> },
       { path: 'favorites', element: <FavoritesPage /> },
       { path: 'profile', element: <RiderProfilePage /> },
     ],
