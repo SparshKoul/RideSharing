@@ -62,7 +62,7 @@ export default function PaymentsPage() {
         <ShieldCheck size={22} className="text-[#D4FF00] shrink-0" />
         <div>
           <strong className="text-white uppercase font-neo-heading">Prototype Security Notice:</strong>{' '}
-          RideFlow does not collect real card numbers, CVVs, or OTPs. All balances and transactions are demo abstractions.
+          RideEzz does not collect real card numbers, CVVs, or OTPs. All balances and transactions are demo abstractions.
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 export const RIDE_CATEGORIES = [
   {
     id: 'economy',
-    name: 'Rush Go / Mini',
+    name: 'RideEzz Go / Mini',
     tagline: 'Affordable, compact city rides',
     capacity: 4,
     baseFare: 40,
@@ -16,7 +16,7 @@ export const RIDE_CATEGORIES = [
   },
   {
     id: 'moto',
-    name: 'Rush Moto',
+    name: 'RideEzz Moto',
     tagline: 'Fastest urban micro-transit',
     capacity: 1,
     baseFare: 20,
@@ -31,7 +31,7 @@ export const RIDE_CATEGORIES = [
   },
   {
     id: 'comfort',
-    name: 'Rush Premier Sedan',
+    name: 'RideEzz Premier Sedan',
     tagline: 'High-comfort sedans with top drivers',
     capacity: 4,
     baseFare: 65,
@@ -46,7 +46,7 @@ export const RIDE_CATEGORIES = [
   },
   {
     id: 'xl',
-    name: 'Rush XL / SUV',
+    name: 'RideEzz XL / SUV',
     tagline: 'Spacious SUVs for groups & bags',
     capacity: 6,
     baseFare: 95,
@@ -61,7 +61,7 @@ export const RIDE_CATEGORIES = [
   },
   {
     id: 'electric',
-    name: 'Rush Electric Green',
+    name: 'RideEzz Electric Green',
     tagline: '100% Zero-emission electric fleet',
     capacity: 4,
     baseFare: 60,
@@ -76,7 +76,7 @@ export const RIDE_CATEGORIES = [
   },
   {
     id: 'black',
-    name: 'Rush Black Elite',
+    name: 'RideEzz Black Elite',
     tagline: 'Luxury executive chauffeur service',
     capacity: 4,
     baseFare: 150,

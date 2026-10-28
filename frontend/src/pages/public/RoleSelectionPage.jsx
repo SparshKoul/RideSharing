@@ -25,7 +25,7 @@ export default function RoleSelectionPage() {
       </div>
 
       <h1 className="font-neo-heading text-3xl sm:text-4xl font-black uppercase text-white tracking-tight text-center mb-3">
-        WELCOME TO <span className="text-[#D4FF00]">RUSHRIDE</span>
+        WELCOME TO <span className="text-[#D4FF00]">RIDEEZZ</span>
       </h1>
       <p className="font-neo-grotesk text-sm text-[#A5A1CE] text-center max-w-md mb-8">
         Hardcoded Customer values are configured. No need to switch IDs or authenticate different roles.

@@ -20,10 +20,10 @@ export default function NotificationPanel() {
   const sampleNotifications = [
     {
       id: 'notif-1',
-      title: activeRide ? `Active Ride: ${activeRide.id}` : 'RideFlow System Ready',
+      title: activeRide ? `Active Ride: ${activeRide.id}` : 'RideEzz System Ready',
       desc: activeRide
         ? `Status: ${activeRide.status.replace('_', ' ').toUpperCase()} • ${activeRide.destination?.name}`
-        : 'Welcome to RideFlow simulated ride-sharing platform.',
+        : 'Welcome to RideEzz simulated ride-sharing platform.',
       time: 'Just now',
       unread: true,
     },
