@@ -60,9 +60,9 @@ export default function Navbar() {
           </Link>
           <Link
             to="/help"
-            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-white hover:bg-white/5 transition-colors"
+            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-[#d8fc38] hover:bg-white/5 transition-colors"
           >
-            Help
+            Support & Contact
           </Link>
         </nav>
 

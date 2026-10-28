@@ -31,8 +31,9 @@ export const router = createBrowserRouter([
       { path: 'role-select', element: <Navigate to="/rider/dashboard" replace /> },
       { path: 'login', element: <Navigate to="/rider/dashboard" replace /> },
       { path: 'register', element: <Navigate to="/rider/dashboard" replace /> },
-      { path: 'auth/*', element: <Navigate to="/rider/dashboard" replace /> },
       { path: 'help', element: <HelpPage /> },
+      { path: 'contact', element: <HelpPage /> },
+      { path: 'support', element: <HelpPage /> },
     ],
   },
 

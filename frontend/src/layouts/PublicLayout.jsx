@@ -70,7 +70,7 @@ export default function PublicLayout() {
               Driver Console
             </Link>
             <Link to="/help" className="hover:text-[#D4FF00] transition-colors">
-              Help Center & FAQ
+              Support & Contact
             </Link>
           </div>
 
