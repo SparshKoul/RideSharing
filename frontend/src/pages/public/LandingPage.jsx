@@ -88,7 +88,7 @@ export default function LandingPage() {
             <a href="#perks" className="fb-navlink">Perks</a>
             <a href="#safety" className="fb-navlink">Safety</a>
             <a href="#faq" className="fb-navlink">FAQ</a>
-            <Link to="/help" className="fb-navlink">Support</Link>
+            <Link to="/help" className="fb-navlink">Support & Contact</Link>
           </nav>
 
           <div className="fb-navbar-actions">
@@ -136,7 +136,7 @@ export default function LandingPage() {
               FAQ
             </a>
             <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
-              Support
+              Support & Contact
             </Link>
             <Link
               to="/rider/dashboard"
@@ -405,15 +405,21 @@ export default function LandingPage() {
             </p>
           </header>
 
-          {/* Key Visual Art */}
-          <img
-            alt="RushRide keyboard and dispatch controls"
-            className="fb-keys-art"
-            src="/buildathon/keys-890.webp"
-            width="890"
-            height="525"
-            loading="lazy"
-          />
+          {/* Key Visual Art - Ride Platform Vehicle */}
+          <div className="fb-car-art-container">
+            <img
+              alt="RushRide electric vehicle fleet"
+              className="fb-car-art"
+              src="/images/rideshare-car.jpg"
+              width="890"
+              height="500"
+              loading="lazy"
+            />
+            <div className="fb-car-badge">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse border border-[#0b0630]" />
+              <span>LIVE DISPATCH · SMART FLEET</span>
+            </div>
+          </div>
 
           <ol className="fb-steps" data-fb-stagger="true">
             <li className="fb-step" id="step-1">
@@ -1023,7 +1029,7 @@ export default function LandingPage() {
 
             <div className="fb-ctas fb-ctas-center">
               <Link to="/help" className="fb-btn fb-btn-lime">
-                Open Help Center
+                Contact & Support Desk
                 <span aria-hidden="true">→</span>
               </Link>
               <Link to="/rider/dashboard" className="fb-btn fb-btn-ink">
@@ -1099,7 +1105,7 @@ export default function LandingPage() {
             <Link to="/rider/dashboard">Customer Console</Link>
             <Link to="/rider/book">Book a Ride</Link>
             <Link to="/rider/trips">My Trips</Link>
-            <Link to="/help">Help & Safety</Link>
+            <Link to="/help">Support & Contact</Link>
             <a href="#perks">Perks</a>
             <a href="#classes">Vehicle Tiers</a>
           </p>

@@ -523,3 +523,73 @@
   }
 }
 
+/* How It Works - Ride Platform Car Visual Art */
+.fb-car-art-container {
+  position: relative;
+  width: min(92vw, 440px);
+  margin: 0 auto 32px;
+  display: block;
+}
+
+.fb-car-art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  border: 3.5px solid var(--fb-ink, #0b0630);
+  border-radius: 18px;
+  box-shadow: 8px 8px 0 var(--fb-ink, #0b0630), 0 20px 40px rgba(11, 6, 48, 0.45);
+  background: var(--fb-ink, #0b0630);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.fb-car-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--fb-lime, #d8fc38);
+  color: var(--fb-ink, #0b0630);
+  font-family: var(--fb-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border: 2px solid var(--fb-ink, #0b0630);
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 var(--fb-ink, #0b0630);
+  pointer-events: none;
+}
+
+@media (min-width: 1100px) {
+  .fb-car-art-container {
+    position: absolute;
+    top: 40px;
+    right: var(--fb-pad, 40px);
+    width: 440px;
+    margin: 0;
+    transform: rotate(2.5deg);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  .fb-car-art-container:hover {
+    transform: rotate(0deg) translateY(-4px);
+  }
+
+  .fb-car-art-container:hover .fb-car-art {
+    box-shadow: 12px 12px 0 var(--fb-ink, #0b0630), 0 26px 50px rgba(11, 6, 48, 0.55);
+  }
+}
+
+@media (max-width: 1099px) {
+  .fb-car-art-container {
+    display: block;
+    margin: 12px auto 36px;
+  }
+}
+
+
