@@ -1,49 +1,104 @@
 import { create } from 'zustand';
 import { getStoredItem, setStoredItem, removeStoredItem } from '../utils/storage';
 import { HARDCODED_CUSTOMER } from '../data/riders';
+import * as api from '../utils/api';
 
 const AUTH_STORAGE_KEY = 'rushride_customer_session_v3';
+const DEMO_EMAIL = 'demo.rider@rideezz.demo';
+const DEMO_PASSWORD = 'demo1234';
 
-const initialSession = getStoredItem(AUTH_STORAGE_KEY, {
-  role: 'rider', // Hardcoded Customer role
+const demoSession = () => ({
+  role: 'rider',
   customer: HARDCODED_CUSTOMER,
   rider: HARDCODED_CUSTOMER,
   isAuthenticated: true,
 });
 
-export const useAuthStore = create((set) => ({
-  role: 'rider', // Customer role is fixed
-  customer: HARDCODED_CUSTOMER,
-  rider: initialSession.rider || HARDCODED_CUSTOMER,
-  driver: null,
-  isAuthenticated: true,
+const initialSession = getStoredItem(AUTH_STORAGE_KEY, demoSession());
 
-  // Customer login (ensures hardcoded values)
-  loginAsRider: () => {
-    const session = {
-      role: 'rider',
-      customer: HARDCODED_CUSTOMER,
-      rider: HARDCODED_CUSTOMER,
-      isAuthenticated: true,
-    };
-    set(session);
-    setStoredItem(AUTH_STORAGE_KEY, session);
+export const useAuthStore = create((set, get) => ({
+  ...initialSession,
+  token: api.getAuthToken(),
+  isBootstrapping: false,
+  authError: null,
+
+  /**
+   * Acquire a JWT for the seeded demo rider on app start.
+   * If the backend is unavailable the app keeps working in local demo mode.
+   */
+  bootstrap: async () => {
+    if (api.getAuthToken()) return;
+    set({ isBootstrapping: true });
+    try {
+      await api.login(DEMO_EMAIL, DEMO_PASSWORD);
+      set({ token: api.getAuthToken(), isAuthenticated: true, authError: null });
+    } catch (err) {
+      set({ authError: err.message });
+    } finally {
+      set({ isBootstrapping: false });
+    }
   },
 
-  // Role switching disabled - locked to customer
-  switchRole: () => {
-    // Intentionally locked to customer: no ID/role switching
-    const session = {
-      role: 'rider',
-      customer: HARDCODED_CUSTOMER,
-      rider: HARDCODED_CUSTOMER,
-      isAuthenticated: true,
-    };
-    set(session);
-    setStoredItem(AUTH_STORAGE_KEY, session);
+  // Real login against the backend
+  login: async (email, password) => {
+    set({ authError: null });
+    try {
+      const { user } = await api.login(email, password);
+      const rider = { ...HARDCODED_CUSTOMER, id: user.id, email: user.email };
+      const session = {
+        role: user.role || 'rider',
+        customer: rider,
+        rider,
+        isAuthenticated: true,
+        token: api.getAuthToken(),
+      };
+      set(session);
+      setStoredItem(AUTH_STORAGE_KEY, session);
+      return user;
+    } catch (err) {
+      set({ authError: err.message });
+      throw err;
+    }
   },
 
-  // Update Customer profile details
+  // Real registration against the backend
+  register: async (payload) => {
+    set({ authError: null });
+    try {
+      const { user } = await api.register(payload);
+      const rider = {
+        ...HARDCODED_CUSTOMER,
+        id: user.id,
+        email: user.email,
+        name: payload.fullName || HARDCODED_CUSTOMER.name,
+        phone: payload.phone || HARDCODED_CUSTOMER.phone,
+      };
+      const session = {
+        role: 'rider',
+        customer: rider,
+        rider,
+        isAuthenticated: true,
+        token: api.getAuthToken(),
+      };
+      set(session);
+      setStoredItem(AUTH_STORAGE_KEY, session);
+      return user;
+    } catch (err) {
+      set({ authError: err.message });
+      throw err;
+    }
+  },
+
+  // Legacy helpers kept so existing components don't break
+  loginAsRider: async () => {
+    try {
+      await get().login(DEMO_EMAIL, DEMO_PASSWORD);
+    } catch {
+      /* offline demo mode */
+    }
+  },
+  switchRole: () => {},
+
   updateRiderProfile: (updates) => {
     set((state) => {
       const updated = { ...state.rider, ...updates };
@@ -53,28 +108,23 @@ export const useAuthStore = create((set) => ({
     });
   },
 
-  // Reset demo session back to hardcoded customer values
   resetAuthData: () => {
     removeStoredItem(AUTH_STORAGE_KEY);
-    const fresh = {
-      role: 'rider',
-      customer: HARDCODED_CUSTOMER,
-      rider: HARDCODED_CUSTOMER,
-      isAuthenticated: true,
-    };
-    set(fresh);
-    setStoredItem(AUTH_STORAGE_KEY, fresh);
+    api.setAuthToken(null);
+    set(demoSession());
+    get().bootstrap();
   },
 
-  // In customer mode, sign out simply refreshes the customer session
   logout: () => {
-    const fresh = {
+    removeStoredItem(AUTH_STORAGE_KEY);
+    api.setAuthToken(null);
+    set({
       role: 'rider',
       customer: HARDCODED_CUSTOMER,
       rider: HARDCODED_CUSTOMER,
-      isAuthenticated: true,
-    };
-    set(fresh);
-    setStoredItem(AUTH_STORAGE_KEY, fresh);
+      isAuthenticated: false,
+      token: null,
+      authError: null,
+    });
   },
 }));

@@ -2,7 +2,7 @@
 
 ## Overview
 
-A complete backend for the RideFlow / RideEzz ride-sharing platform, built with Node.js/Express and PostgreSQL.
+A complete backend for the RideFlow / RideEzz ride-sharing platform, built with Node.js/Express and **Supabase** (PostgreSQL via Red Hat's managed service).
 
 ## Architecture
 
@@ -11,10 +11,10 @@ backend/
 ├── src/
 │   ├── main.js            # Express server entry point
 │   ├── config/
-│   │   ├── index.js       # Database & logger config
+│   │   ├── index.js       # Supabase client & logger config
 │   │   └── auth.js        # Auth configuration
 │   ├── utils/
-│   │   ├── db.js          # PostgreSQL client
+│   │   ├── db.js          # Supabase client operations
 │   │   ├── logger.js      # Winston logger
 │   │   └── validation.js  # Request validation
 │   ├── middleware/
@@ -25,20 +25,8 @@ backend/
 │   │   ├── payments.js    # Payment routes
 │   │   ├── drivers.js     # Driver profiles
 │   │   └── analytics.js   # Analytics routes
-│   ├── services/
-│   │   ├── booking.js     # Booking & fare calculation
-│   │   ├── status.js      # Ride status management
-│   │   ├── payment.js     # Payment processing
-│   │   ├── driver.js      # Driver data
-│   │   └── audit.js       # Audit logging
-│   ├── migrations/
-│   │   ├── 0001_init.sql  # Schema initialization
-│   │   └── 0002_seed_data.sql  # Seed data
-│   ├── package.json
-│   └── tsconfig.json
-├── migrations/            # SQL migration files
-├── .env                    # Environment configuration
-└── README.md               # This file
+│   └── package.json
+└── migrations/            # SQL migration files
 ```
 
 ## API Endpoints
@@ -62,20 +50,22 @@ backend/
 ```bash
 cd backend
 npm install
+
 # Set environment variables
-export DB_HOST=localhost
-export DB_PORT=5432
-export DB_NAME=rideplatform
-export DB_USER=rideplatform
-export DB_PASSWORD=password
-export JWT_SECRET=your-secret-key
-export JWT_EXPIRES_IN=24h
-export SUPABASE_URL=your-project.supabase.co
-export SUPABASE_ANON_KEY=your-anon-key
-npm run build
+export SUPABASE_URL="https://your-project.supabase.co"
+export SUPABASE_ANON_KEY="your-anon-key"
+
 npm start
 ```
 
+The backend will run on `http://localhost:3001` with all API routes.
+
 ## Database
 
+The backend connects to Supabase's PostgreSQL database via the Supabase JavaScript SDK.
 See `migrations/0001_init.sql` for full schema and `migrations/0002_seed_data.sql` for seed data.
+
+## Notes
+
+- Auth uses Supabase's built-in auth system (email/password login)
+- All database operations go through `supabase.rpc()` for compliance and testing

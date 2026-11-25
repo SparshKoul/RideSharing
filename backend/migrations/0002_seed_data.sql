@@ -1,27 +1,83 @@
 -- ============================================================
--- Migration 0002: Add seed data for drivers and categories
+-- Migration 0002: Seed data
+-- Run this AFTER 0001_initial_schema.sql in the Supabase SQL Editor.
+-- All IDs are valid UUIDs (fixed deterministic values).
 -- ============================================================
 
+-- Seed: rider user (referenced by rides)
+INSERT INTO users (id, email, password_hash, role, account_type) VALUES
+  ('00000000-0000-0000-0000-000000000001', 'demo.rider@rideezz.demo', 'demo', 'rider', 'regular')
+ON CONFLICT (id) DO NOTHING;
+
+-- Seed: drivers
 INSERT INTO drivers (id, name, email, phone, rating, vehicle_jsonb, trips_completed) VALUES
-  ('driver-1'::UUID, 'Vikram Malhotra', 'vikram.driver@rideezz.demo', '+91 98765 43210', 4.92, '{"category":"comfort","model":"Honda City ZX (White)","plateNumber":"CH 01 BG 4022","color":"Pearl White","year":2023,"capacity":4}', 1420),
-  ('driver-2'::UUID, 'Gurpreet Singh', 'gurpreet.driver@rideezz.demo', '+91 98123 67890', 4.88, '{"category":"xl","model":"Toyota Innova Crysta (Silver)","plateNumber":"PB 65 AB 7890","color":"Silver Metallic","year":2022,"capacity":6}', 2150),
-  ('driver-3'::UUID, 'Priya Sharma', 'priya.driver@rideezz.demo', '+91 97654 32109', 4.95, '{"category":"economy","model":"Maruti Suzuki Swift Dzire (Blue)","plateNumber":"CH 01 TA 5514","color":"Oxford Blue","year":2023,"capacity":4}', 890)
+  ('10000000-0000-0000-0000-000000000001', 'Vikram Malhotra', 'vikram.driver@rideezz.demo', '+91 98765 43210', 4.92, '{"category":"comfort","model":"Honda City ZX (White)","plateNumber":"CH 01 BG 4022","color":"Pearl White","year":2023,"capacity":4}', 1420),
+  ('10000000-0000-0000-0000-000000000002', 'Gurpreet Singh', 'gurpreet.driver@rideezz.demo', '+91 98123 67890', 4.88, '{"category":"xl","model":"Toyota Innova Crysta (Silver)","plateNumber":"PB 65 AB 7890","color":"Silver Metallic","year":2022,"capacity":6}', 2150),
+  ('10000000-0000-0000-0000-000000000003', 'Priya Sharma', 'priya.driver@rideezz.demo', '+91 97654 32109', 4.95, '{"category":"economy","model":"Maruti Suzuki Swift Dzire (Blue)","plateNumber":"CH 01 TA 5514","color":"Oxford Blue","year":2023,"capacity":4}', 890)
 ON CONFLICT (id) DO NOTHING;
 
+-- Seed: categories
 INSERT INTO categories (id, name, base_fare, rate_per_km, rate_per_min, capacity) VALUES
-  ('moto'::UUID, 'RideEzz Moto', 20, 8, 1.0, 1),
-  ('economy'::UUID, 'RideEzz Go / Mini', 40, 12, 1.5, 4),
-  ('comfort'::UUID, 'RideEzz Premier Sedan', 65, 16, 2.2, 4),
-  ('xl'::UUID, 'RideEzz XL / SUV', 95, 22, 3.0, 6),
-  ('electric'::UUID, 'RideEzz Electric Green', 60, 14, 2.0, 4),
-  ('black'::UUID, 'RideEzz Black Elite', 150, 30, 4.0, 4)
+  ('20000000-0000-0000-0000-000000000001', 'RideEzz Moto', 20, 8, 1.0, 1),
+  ('20000000-0000-0000-0000-000000000002', 'RideEzz Go / Mini', 40, 12, 1.5, 4),
+  ('20000000-0000-0000-0000-000000000003', 'RideEzz Premier Sedan', 65, 16, 2.2, 4),
+  ('20000000-0000-0000-0000-000000000004', 'RideEzz XL / SUV', 95, 22, 3.0, 6),
+  ('20000000-0000-0000-0000-000000000005', 'RideEzz Electric Green', 60, 14, 2.0, 4),
+  ('20000000-0000-0000-0000-000000000006', 'RideEzz Black Elite', 150, 30, 4.0, 4)
 ON CONFLICT (id) DO NOTHING;
 
+-- Seed: locations
 INSERT INTO locations (id, name, address, lat, lng, tag, popular) VALUES
-  ('loc-1'::UUID, 'Chitkara University', 'Chandigarh-Patiala National Highway (NH-64), Rajpura, Punjab', 30.5161, 76.6592, 'Campus', true),
-  ('loc-2'::UUID, 'Rajpura Bus Stand', 'Old GT Road, Rajpura City Centre, Punjab', 30.4842, 76.5947, 'Transit', true),
-  ('loc-3'::UUID, 'Chandigarh Railway Station', 'Daria, Industrial Area Phase I, Chandigarh', 30.7027, 76.8223, 'Transit', true),
-  ('loc-4'::UUID, 'Elante Mall', 'Plot No. 178-178A, Industrial Area Phase I, Chandigarh', 30.7055, 76.8013, 'Shopping', true),
-  ('loc-5'::UUID, 'Sector 17, Chandigarh', 'City Centre Plaza, Sector 17, Chandigarh', 30.7415, 76.7794, 'Hub', true),
-  ('loc-6'::UUID, 'Chandigarh International Airport', 'New Civil Air Terminal, Jhiurheri, Mohali, Punjab', 30.6735, 76.7885, 'Airport', true)
+  ('30000000-0000-0000-0000-000000000001', 'Chitkara University', 'Chandigarh-Patiala National Highway (NH-64), Rajpura, Punjab', 30.5161, 76.6592, 'Campus', true),
+  ('30000000-0000-0000-0000-000000000002', 'Rajpura Bus Stand', 'Old GT Road, Rajpura City Centre, Punjab', 30.4842, 76.5947, 'Transit', true),
+  ('30000000-0000-0000-0000-000000000003', 'Chandigarh Railway Station', 'Daria, Industrial Area Phase I, Chandigarh', 30.7027, 76.8223, 'Transit', true),
+  ('30000000-0000-0000-0000-000000000004', 'Elante Mall', 'Plot No. 178-178A, Industrial Area Phase I, Chandigarh', 30.7055, 76.8013, 'Shopping', true),
+  ('30000000-0000-0000-0000-000000000005', 'Sector 17, Chandigarh', 'City Centre Plaza, Sector 17, Chandigarh', 30.7415, 76.7794, 'Hub', true),
+  ('30000000-0000-0000-0000-000000000006', 'Chandigarh International Airport', 'New Civil Air Terminal, Jhiurheri, Mohali, Punjab', 30.6735, 76.7885, 'Airport', true)
 ON CONFLICT (id) DO NOTHING;
+
+-- Seed: ride history
+INSERT INTO rides (id, rider_id, driver_id, pickup_location_id, destination_location_id, category_id, status, created_by, final_fare, driver_earnings, cancellation_reason) VALUES
+  ('40000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000003', 'completed', '00000000-0000-0000-0000-000000000001', 605, 496, NULL),
+  ('40000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000002', 'completed', '00000000-0000-0000-0000-000000000001', 162, 133, NULL),
+  ('40000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000006', '20000000-0000-0000-0000-000000000004', 'completed', '00000000-0000-0000-0000-000000000001', 440, 361, NULL),
+  ('40000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000002', 'cancelled', '00000000-0000-0000-0000-000000000001', NULL, 0, 'Driver was taking too long')
+ON CONFLICT (id) DO NOTHING;
+
+-- Seed: route metrics
+INSERT INTO route_metrics (pickup_id, destination_id, distance_km, duration_mins) VALUES
+  ('30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002', 8.4, 14),
+  ('30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000003', 31.2, 42),
+  ('30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000004', 28.5, 38),
+  ('30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000005', 34.0, 46),
+  ('30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000006', 26.8, 35),
+  ('30000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 8.4, 14),
+  ('30000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000003', 36.5, 48),
+  ('30000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000004', 33.2, 44),
+  ('30000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000005', 38.6, 52),
+  ('30000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000006', 32.0, 42),
+  ('30000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 31.2, 42),
+  ('30000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000002', 36.5, 48),
+  ('30000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000004', 4.8, 12),
+  ('30000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000005', 7.2, 18),
+  ('30000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000006', 9.6, 20),
+  ('30000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000001', 28.5, 38),
+  ('30000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000002', 33.2, 44),
+  ('30000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000003', 4.8, 12),
+  ('30000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000005', 5.6, 15),
+  ('30000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000006', 8.2, 18),
+  ('30000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000001', 34.0, 46),
+  ('30000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000002', 38.6, 52),
+  ('30000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000003', 7.2, 18),
+  ('30000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000004', 5.6, 15),
+  ('30000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000006', 12.4, 24),
+  ('30000000-0000-0000-0000-000000000006', '30000000-0000-0000-0000-000000000001', 26.8, 35),
+  ('30000000-0000-0000-0000-000000000006', '30000000-0000-0000-0000-000000000002', 32.0, 42),
+  ('30000000-0000-0000-0000-000000000006', '30000000-0000-0000-0000-000000000003', 9.6, 20),
+  ('30000000-0000-0000-0000-000000000006', '30000000-0000-0000-0000-000000000004', 8.2, 18),
+  ('30000000-0000-0000-0000-000000000006', '30000000-0000-0000-0000-000000000005', 12.4, 24)
+ON CONFLICT (pickup_id, destination_id) DO NOTHING;
+
+-- ============================================================
+-- Seed complete.
+-- ============================================================

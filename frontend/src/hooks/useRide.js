@@ -8,6 +8,13 @@ export function useRide() {
   const bookingDraft = useRideStore((s) => s.bookingDraft);
   const rejectedRideIds = useRideStore((s) => s.rejectedRideIds);
   const notifications = useRideStore((s) => s.notifications);
+  const locations = useRideStore((s) => s.locations);
+  const categories = useRideStore((s) => s.categories);
+  const drivers = useRideStore((s) => s.drivers);
+  const isLoading = useRideStore((s) => s.isLoading);
+  const isConnected = useRideStore((s) => s.isConnected);
+  const loadCatalog = useRideStore((s) => s.loadCatalog);
+  const loadRides = useRideStore((s) => s.loadRides);
 
   const updateBookingDraft = useRideStore((s) => s.updateBookingDraft);
   const swapPickupAndDestination = useRideStore((s) => s.swapPickupAndDestination);
@@ -48,6 +55,13 @@ export function useRide() {
     cancelledTrips,
     bookingDraft,
     notifications,
+    locations,
+    categories,
+    drivers,
+    isLoading,
+    isConnected,
+    loadCatalog,
+    loadRides,
     riderTotalSpent,
     riderCompletedTripsCount: riderCompletedTrips.length,
     updateBookingDraft,

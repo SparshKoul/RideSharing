@@ -2,19 +2,20 @@
  * Main server entry point
  */
 
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { getLogger } from './config/index.js';
-import { getDBConfig } from './config/index.js';
-import { db } from './utils/db.js';
+import supabase from './utils/db.js';
 import authRouter from './routes/auth.js';
 import ridesRouter from './routes/rides.js';
 import paymentRouter from './routes/payments.js';
 import driverRouter from './routes/drivers.js';
 import analyticsRouter from './routes/analytics.js';
+import catalogRouter from './routes/catalog.js';
 
 const logger = getLogger();
 const app = express();
@@ -24,6 +25,8 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 app.use(cors());
 app.use(morgan('combined'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -38,6 +41,7 @@ app.use('/api/rides', ridesRouter);
 app.use('/api/payments', paymentRouter);
 app.use('/api/drivers', driverRouter);
 app.use('/api/analytics', analyticsRouter);
+app.use('/api', catalogRouter);
 
 // Health check
 app.get('/health', (_req, res) => {

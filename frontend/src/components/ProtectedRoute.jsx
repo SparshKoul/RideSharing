@@ -1,13 +1,9 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 
+/**
+ * Auth entry points live in the navbar modal, so routes stay reachable
+ * while signed out - the navbar shows Sign In / Sign Up in that state.
+ */
 export default function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/rider/dashboard" replace />;
-  }
-
   return children;
 }

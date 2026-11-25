@@ -21,16 +21,16 @@ export default function BookingConfirmation() {
   const { bookingDraft, createRideRequest } = useRide();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsSubmitting(true);
-
-    setTimeout(() => {
-      const createdRide = createRideRequest({
-        ...bookingDraft,
-      });
-      setIsSubmitting(false);
+    try {
+      const createdRide = await createRideRequest({ ...bookingDraft });
       navigate(`/rider/ride/${createdRide.id}`);
-    }, 600);
+    } catch (err) {
+      console.error('Booking failed', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -1,13 +1,14 @@
 /**
- * Database client
+ * Supabase client for database operations
  */
 
-import { Pool } from 'pg';
-import { getDBConfig } from '../config/index.js';
+import { getSupabaseClient } from '../config/index.js';
 
-export const db = new Pool(getDBConfig());
+const supabase = getSupabaseClient();
+
+export default supabase;
 
 export const query = async (text, params = []) => {
-  const result = await db.query(text, params);
-  return result.rows;
+  const { count, data } = await supabase.rpc('%s', ...params);
+  return data;
 };

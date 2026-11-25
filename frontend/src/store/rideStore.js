@@ -5,6 +5,7 @@ import { RIDE_CATEGORIES } from '../data/rideCategories';
 import { getRouteMetrics, calculateFare, calculateDriverEarnings } from '../utils/fareCalculator';
 import { DEFAULT_DEMO_DRIVER } from '../data/drivers';
 import { HARDCODED_CUSTOMER } from '../data/riders';
+import * as api from '../utils/api';
 
 const RIDE_STORAGE_KEY = 'rushride_customer_rides_v3';
 const DRAFT_STORAGE_KEY = 'rushride_customer_draft_v3';
@@ -117,6 +118,47 @@ export const useRideStore = create((set, get) => ({
   notifications: [],
   rejectedRideIds: [],
 
+  // Backend connection state
+  locations: MOCK_LOCATIONS,
+  categories: RIDE_CATEGORIES,
+  drivers: [DEFAULT_DEMO_DRIVER],
+  isLoading: false,
+  isConnected: false,
+
+  /** Load catalog + trips from Supabase. Falls back to local mocks offline. */
+  loadCatalog: async () => {
+    try {
+      const [locations, categories, drivers] = await Promise.all([
+        api.getLocations(),
+        api.getCategories(),
+        api.getDrivers(),
+      ]);
+      set({ locations, categories, drivers, isConnected: true });
+    } catch (err) {
+      set({ isConnected: false });
+    }
+  },
+
+  loadRides: async () => {
+    set({ isLoading: true });
+    try {
+      const rides = await api.getRides(true);
+      if (rides.length) {
+        set((state) => ({
+          rides: rides.map((ride) => {
+            const local = state.rides.find((r) => r.id === ride.id);
+            return local ? { ...ride, rating: local.rating, ratingFeedback: local.ratingFeedback } : ride;
+          }),
+        }));
+      }
+      set({ isConnected: true });
+    } catch (err) {
+      set({ isConnected: false });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   // Set booking draft fields
   updateBookingDraft: (partialDraft) => {
     set((state) => {
@@ -158,49 +200,52 @@ export const useRideStore = create((set, get) => ({
     set({ driverOnline: isOnline });
   },
 
-  // Customer creates a ride booking with hardcoded customer identity
-  createRideRequest: (draftOverrides = null) => {
+  // Customer creates a ride booking - written to Supabase when online
+  createRideRequest: async (draftOverrides = null) => {
     const draft = draftOverrides || get().bookingDraft;
-    const rideId = `RF-${Math.floor(1000 + Math.random() * 9000)}`;
+    let newRide;
 
-    const newRide = {
-      id: rideId,
-      riderId: HARDCODED_CUSTOMER.id,
-      riderName: HARDCODED_CUSTOMER.name,
-      riderPhone: HARDCODED_CUSTOMER.phone,
-      riderRating: HARDCODED_CUSTOMER.rating,
-      pickup: draft.pickup,
-      destination: draft.destination,
-      category: draft.category,
-      distanceKm: draft.distanceKm,
-      durationMins: draft.durationMins,
-      estimatedFare: draft.estimatedFare,
-      finalFare: null,
-      driverEarnings: calculateDriverEarnings(draft.estimatedFare),
-      paymentMethod: draft.paymentMethod || 'UPI',
-      status: 'searching', // initial status
-      createdAt: new Date().toISOString(),
-      completedAt: null,
-      assignedDriver: null,
-      rating: null,
-    };
+    try {
+      newRide = await api.bookRide(draft);
+      set({ isConnected: true });
+    } catch (err) {
+      // Backend unavailable - keep the demo usable offline
+      set({ isConnected: false });
+      newRide = {
+        id: `RF-${Math.floor(1000 + Math.random() * 9000)}`,
+        riderId: HARDCODED_CUSTOMER.id,
+        riderName: HARDCODED_CUSTOMER.name,
+        riderPhone: HARDCODED_CUSTOMER.phone,
+        riderRating: HARDCODED_CUSTOMER.rating,
+        pickup: draft.pickup,
+        destination: draft.destination,
+        category: draft.category,
+        distanceKm: draft.distanceKm,
+        durationMins: draft.durationMins,
+        estimatedFare: draft.estimatedFare,
+        finalFare: draft.estimatedFare,
+        driverEarnings: calculateDriverEarnings(draft.estimatedFare),
+        paymentMethod: draft.paymentMethod || 'UPI',
+        status: 'searching',
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+        assignedDriver: null,
+        rating: null,
+      };
+    }
 
     set((state) => {
       const updatedRides = [newRide, ...state.rides];
       setStoredItem(RIDE_STORAGE_KEY, updatedRides);
-      return {
-        rides: updatedRides,
-        activeRideId: rideId,
-      };
+      return { rides: updatedRides, activeRideId: newRide.id };
     });
 
-    get().addToast(`Ride request ${rideId} created! Matching with nearby drivers...`, 'success');
+    get().addToast(`Ride request ${newRide.id} created! Matching with nearby drivers...`, 'success');
 
-    // Auto-match nearby driver after 2.5s without needing to switch to a driver ID
     setTimeout(() => {
-      const current = get().rides.find((r) => r.id === rideId);
+      const current = get().rides.find((r) => r.id === newRide.id);
       if (current && current.status === 'searching') {
-        get().autoAssignDriver(rideId);
+        get().autoAssignDriver(newRide.id);
       }
     }, 2500);
 
@@ -227,6 +272,7 @@ export const useRideStore = create((set, get) => ({
     });
 
     if (assigned) {
+      api.updateRideStatus(rideId, 'driver_assigned').catch(() => set({ isConnected: false }));
       get().addToast(`Driver ${driver.name} accepted your ride! Heading towards pickup.`, 'success');
     }
   },
@@ -235,6 +281,9 @@ export const useRideStore = create((set, get) => ({
   advanceRideSimulation: (rideId) => {
     const targetRide = get().rides.find((r) => r.id === rideId);
     if (!targetRide) return;
+
+    const persist = (status, extra = {}) =>
+      api.updateRideStatus(rideId, status, extra).catch(() => set({ isConnected: false }));
 
     if (targetRide.status === 'searching') {
       get().autoAssignDriver(rideId);
@@ -246,6 +295,7 @@ export const useRideStore = create((set, get) => ({
         setStoredItem(RIDE_STORAGE_KEY, updated);
         return { rides: updated };
       });
+      persist('driver_arriving');
       get().addToast("Driver has arrived at your pickup spot!", "info");
     } else if (targetRide.status === 'driver_arriving') {
       set((state) => {
@@ -255,23 +305,20 @@ export const useRideStore = create((set, get) => ({
         setStoredItem(RIDE_STORAGE_KEY, updated);
         return { rides: updated };
       });
+      persist('in_progress');
       get().addToast("Trip started! En route to destination.", "success");
     } else if (targetRide.status === 'in_progress') {
+      const finalFare = targetRide.estimatedFare;
       set((state) => {
-        const finalFare = targetRide.estimatedFare;
         const updated = state.rides.map((r) =>
           r.id === rideId
-            ? {
-                ...r,
-                status: 'completed',
-                finalFare,
-                completedAt: new Date().toISOString(),
-              }
+            ? { ...r, status: 'completed', finalFare, completedAt: new Date().toISOString() }
             : r
         );
         setStoredItem(RIDE_STORAGE_KEY, updated);
         return { rides: updated, activeRideId: null };
       });
+      persist('completed', { finalFare });
       get().addToast("You have reached your destination! Trip completed.", "success");
     }
   },
@@ -312,11 +359,9 @@ export const useRideStore = create((set, get) => ({
         r.id === rideId ? { ...r, status: 'cancelled', cancellationReason: reason } : r
       );
       setStoredItem(RIDE_STORAGE_KEY, updatedRides);
-      return {
-        rides: updatedRides,
-        activeRideId: null,
-      };
+      return { rides: updatedRides, activeRideId: null };
     });
+    api.updateRideStatus(rideId, 'cancelled').catch(() => set({ isConnected: false }));
     get().addToast("Ride has been cancelled.", "info");
   },
 
