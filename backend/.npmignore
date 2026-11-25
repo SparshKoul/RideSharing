@@ -1,0 +1,11 @@
+# Linting
+eslint
+
+# Type checking
+tsc --noEmit
+
+# Build
+npm run build
+
+# Test
+npm test
