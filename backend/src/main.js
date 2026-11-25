@@ -16,6 +16,7 @@ import paymentRouter from './routes/payments.js';
 import driverRouter from './routes/drivers.js';
 import analyticsRouter from './routes/analytics.js';
 import catalogRouter from './routes/catalog.js';
+import stateRouter from './routes/state.js';
 
 const logger = getLogger();
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/payments', paymentRouter);
 app.use('/api/drivers', driverRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api', catalogRouter);
+app.use('/api/state', stateRouter);
 
 // Health check
 app.get('/health', (_req, res) => {

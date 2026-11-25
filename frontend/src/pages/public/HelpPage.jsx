@@ -96,8 +96,8 @@ const FAQS = [
   },
   {
     category: 'Platform Architecture',
-    question: 'Why are authentication and payments simulated?',
-    answer: 'RideEzz is a frontend-only architectural showcase running entirely within your browser. No backend APIs, real payment gateways, or live GPS telemetry are connected. All demo accounts, driver earnings, and trips persist in browser localStorage.',
+    question: 'How is my data stored?',
+    answer: 'Accounts, trips, booking drafts, and profile details are stored in Supabase through the RideEzz backend API. Payments and live GPS are demo simulations.',
   },
   {
     category: 'Safety & Emergency',

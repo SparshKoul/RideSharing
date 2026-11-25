@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { getStoredItem, setStoredItem, removeStoredItem } from '../utils/storage';
 import { MOCK_LOCATIONS, DEFAULT_PICKUP, DEFAULT_DESTINATION } from '../data/locations';
 import { RIDE_CATEGORIES } from '../data/rideCategories';
 import { getRouteMetrics, calculateFare, calculateDriverEarnings } from '../utils/fareCalculator';
@@ -7,8 +6,6 @@ import { DEFAULT_DEMO_DRIVER } from '../data/drivers';
 import { HARDCODED_CUSTOMER } from '../data/riders';
 import * as api from '../utils/api';
 
-const RIDE_STORAGE_KEY = 'rushride_customer_rides_v3';
-const DRAFT_STORAGE_KEY = 'rushride_customer_draft_v3';
 
 // Seed initial realistic completed/cancelled trips for the customer
 const SEED_RIDES = [
@@ -95,12 +92,10 @@ const SEED_RIDES = [
   },
 ];
 
-const initialRides = getStoredItem(RIDE_STORAGE_KEY, SEED_RIDES);
-
 const defaultMetrics = getRouteMetrics(DEFAULT_PICKUP.id, DEFAULT_DESTINATION.id);
 const defaultFare = calculateFare(RIDE_CATEGORIES[0], defaultMetrics.distanceKm, defaultMetrics.durationMins);
 
-const initialDraft = getStoredItem(DRAFT_STORAGE_KEY, {
+const defaultDraft = {
   pickup: DEFAULT_PICKUP,
   destination: DEFAULT_DESTINATION,
   category: RIDE_CATEGORIES[0],
@@ -108,13 +103,13 @@ const initialDraft = getStoredItem(DRAFT_STORAGE_KEY, {
   distanceKm: defaultMetrics.distanceKm,
   durationMins: defaultMetrics.durationMins,
   estimatedFare: defaultFare,
-});
+};
 
 export const useRideStore = create((set, get) => ({
-  rides: initialRides,
+  rides: SEED_RIDES,
   activeRideId: null, // ID of currently active ride in progress
   driverOnline: true,
-  bookingDraft: initialDraft,
+  bookingDraft: defaultDraft,
   notifications: [],
   rejectedRideIds: [],
 
@@ -159,8 +154,22 @@ export const useRideStore = create((set, get) => ({
     }
   },
 
+  /** Load the persisted booking draft from Supabase. */
+  loadState: async () => {
+    try {
+      const state = await api.getState();
+      if (state?.draft) set({ bookingDraft: state.draft });
+      set({ isConnected: true });
+      return state;
+    } catch (err) {
+      set({ isConnected: false });
+      return null;
+    }
+  },
+
   // Set booking draft fields
   updateBookingDraft: (partialDraft) => {
+    let next;
     set((state) => {
       const merged = { ...state.bookingDraft, ...partialDraft };
       if (partialDraft.pickup || partialDraft.destination || partialDraft.category) {
@@ -171,13 +180,15 @@ export const useRideStore = create((set, get) => ({
           merged.estimatedFare = calculateFare(merged.category, metrics.distanceKm, metrics.durationMins);
         }
       }
-      setStoredItem(DRAFT_STORAGE_KEY, merged);
+      next = merged;
       return { bookingDraft: merged };
     });
+    api.saveState({ draft: next }).catch(() => set({ isConnected: false }));
   },
 
   // Swap pickup & destination
   swapPickupAndDestination: () => {
+    let next;
     set((state) => {
       const current = state.bookingDraft;
       const swapped = {
@@ -191,9 +202,10 @@ export const useRideStore = create((set, get) => ({
       if (swapped.category) {
         swapped.estimatedFare = calculateFare(swapped.category, metrics.distanceKm, metrics.durationMins);
       }
-      setStoredItem(DRAFT_STORAGE_KEY, swapped);
+      next = swapped;
       return { bookingDraft: swapped };
     });
+    api.saveState({ draft: next }).catch(() => set({ isConnected: false }));
   },
 
   setDriverOnline: (isOnline) => {
@@ -236,7 +248,6 @@ export const useRideStore = create((set, get) => ({
 
     set((state) => {
       const updatedRides = [newRide, ...state.rides];
-      setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides, activeRideId: newRide.id };
     });
 
@@ -267,7 +278,6 @@ export const useRideStore = create((set, get) => ({
         }
         return ride;
       });
-      setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides };
     });
 
@@ -292,7 +302,6 @@ export const useRideStore = create((set, get) => ({
         const updated = state.rides.map((r) =>
           r.id === rideId ? { ...r, status: 'driver_arriving' } : r
         );
-        setStoredItem(RIDE_STORAGE_KEY, updated);
         return { rides: updated };
       });
       persist('driver_arriving');
@@ -302,7 +311,6 @@ export const useRideStore = create((set, get) => ({
         const updated = state.rides.map((r) =>
           r.id === rideId ? { ...r, status: 'in_progress' } : r
         );
-        setStoredItem(RIDE_STORAGE_KEY, updated);
         return { rides: updated };
       });
       persist('in_progress');
@@ -315,7 +323,6 @@ export const useRideStore = create((set, get) => ({
             ? { ...r, status: 'completed', finalFare, completedAt: new Date().toISOString() }
             : r
         );
-        setStoredItem(RIDE_STORAGE_KEY, updated);
         return { rides: updated, activeRideId: null };
       });
       persist('completed', { finalFare });
@@ -335,7 +342,6 @@ export const useRideStore = create((set, get) => ({
       const updatedRides = state.rides.map((r) =>
         r.id === rideId ? { ...r, status: 'driver_arriving' } : r
       );
-      setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides };
     });
   },
@@ -344,7 +350,6 @@ export const useRideStore = create((set, get) => ({
       const updatedRides = state.rides.map((r) =>
         r.id === rideId ? { ...r, status: 'in_progress' } : r
       );
-      setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides };
     });
   },
@@ -358,7 +363,6 @@ export const useRideStore = create((set, get) => ({
       const updatedRides = state.rides.map((r) =>
         r.id === rideId ? { ...r, status: 'cancelled', cancellationReason: reason } : r
       );
-      setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides, activeRideId: null };
     });
     api.updateRideStatus(rideId, 'cancelled').catch(() => set({ isConnected: false }));
@@ -371,7 +375,6 @@ export const useRideStore = create((set, get) => ({
       const updatedRides = state.rides.map((r) =>
         r.id === rideId ? { ...r, rating, ratingFeedback: comment } : r
       );
-      setStoredItem(RIDE_STORAGE_KEY, updatedRides);
       return { rides: updatedRides };
     });
     get().addToast("Thank you for your rating!", "success");
@@ -417,17 +420,17 @@ export const useRideStore = create((set, get) => ({
     }));
   },
 
-  // Reset entire ride data to seed state
-  resetAllRideData: () => {
-    removeStoredItem(RIDE_STORAGE_KEY);
-    removeStoredItem(DRAFT_STORAGE_KEY);
+  // Reset local view and reload everything from the database
+  resetAllRideData: async () => {
     set({
-      rides: SEED_RIDES,
+      rides: [],
       activeRideId: null,
       driverOnline: true,
-      bookingDraft: initialDraft,
+      bookingDraft: defaultDraft,
       rejectedRideIds: [],
     });
-    get().addToast("Customer ride data has been restored to default seeds.", "info");
+    api.saveState({ draft: defaultDraft }).catch(() => set({ isConnected: false }));
+    await get().loadRides();
+    get().addToast("Ride data reloaded from the database.", "info");
   },
 }));

@@ -13,6 +13,7 @@ export default function App() {
       await Promise.all([
         useRideStore.getState().loadCatalog(),
         useRideStore.getState().loadRides(),
+        useRideStore.getState().loadState(),
       ]);
     })();
   }, []);

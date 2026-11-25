@@ -202,6 +202,13 @@ export const acceptRide = async (id) =>
 export const completeRide = async (id, finalFare) =>
   request(`/rides/${id}/driverComplete`, { method: 'POST', body: { finalFare } });
 
+/* ----------------------------- app state ---------------------------- */
+
+export const getState = () => request('/state');
+
+export const saveState = (partial) =>
+  request('/state', { method: 'PUT', body: partial });
+
 /* ------------------------------ payments ---------------------------- */
 
 export const processPayment = (payload) =>

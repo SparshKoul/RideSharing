@@ -1,36 +1,45 @@
 import { create } from 'zustand';
-import { getStoredItem, setStoredItem, removeStoredItem } from '../utils/storage';
 import { HARDCODED_CUSTOMER } from '../data/riders';
 import * as api from '../utils/api';
 
-const AUTH_STORAGE_KEY = 'rushride_customer_session_v3';
 const DEMO_EMAIL = 'demo.rider@rideezz.demo';
 const DEMO_PASSWORD = 'demo1234';
 
-const demoSession = () => ({
+/** Acquire a JWT and restore the server-side profile. */
+export const useAuthStore = create((set, get) => ({
   role: 'rider',
   customer: HARDCODED_CUSTOMER,
   rider: HARDCODED_CUSTOMER,
-  isAuthenticated: true,
-});
-
-const initialSession = getStoredItem(AUTH_STORAGE_KEY, demoSession());
-
-export const useAuthStore = create((set, get) => ({
-  ...initialSession,
+  driver: null,
+  isAuthenticated: false,
   token: api.getAuthToken(),
   isBootstrapping: false,
   authError: null,
 
-  /**
-   * Acquire a JWT for the seeded demo rider on app start.
-   * If the backend is unavailable the app keeps working in local demo mode.
-   */
+  /** Load profile + favorites from Supabase into the session. */
+  loadProfile: async () => {
+    try {
+      const state = await api.getState();
+      const saved = state?.profile;
+      if (saved) {
+        const rider = { ...HARDCODED_CUSTOMER, ...saved };
+        set({ rider, customer: rider });
+      }
+    } catch (err) {
+      // Offline - keep the local demo identity
+    }
+  },
+
   bootstrap: async () => {
-    if (api.getAuthToken()) return;
+    if (api.getAuthToken()) {
+      await get().loadProfile();
+      set({ isAuthenticated: true });
+      return;
+    }
     set({ isBootstrapping: true });
     try {
       await api.login(DEMO_EMAIL, DEMO_PASSWORD);
+      await get().loadProfile();
       set({ token: api.getAuthToken(), isAuthenticated: true, authError: null });
     } catch (err) {
       set({ authError: err.message });
@@ -39,21 +48,13 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // Real login against the backend
   login: async (email, password) => {
     set({ authError: null });
     try {
       const { user } = await api.login(email, password);
       const rider = { ...HARDCODED_CUSTOMER, id: user.id, email: user.email };
-      const session = {
-        role: user.role || 'rider',
-        customer: rider,
-        rider,
-        isAuthenticated: true,
-        token: api.getAuthToken(),
-      };
-      set(session);
-      setStoredItem(AUTH_STORAGE_KEY, session);
+      set({ role: user.role || 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
+      await get().loadProfile();
       return user;
     } catch (err) {
       set({ authError: err.message });
@@ -61,7 +62,6 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // Real registration against the backend
   register: async (payload) => {
     set({ authError: null });
     try {
@@ -73,15 +73,8 @@ export const useAuthStore = create((set, get) => ({
         name: payload.fullName || HARDCODED_CUSTOMER.name,
         phone: payload.phone || HARDCODED_CUSTOMER.phone,
       };
-      const session = {
-        role: 'rider',
-        customer: rider,
-        rider,
-        isAuthenticated: true,
-        token: api.getAuthToken(),
-      };
-      set(session);
-      setStoredItem(AUTH_STORAGE_KEY, session);
+      set({ role: 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
+      await get().loadProfile();
       return user;
     } catch (err) {
       set({ authError: err.message });
@@ -89,34 +82,38 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // Legacy helpers kept so existing components don't break
   loginAsRider: async () => {
     try {
       await get().login(DEMO_EMAIL, DEMO_PASSWORD);
     } catch {
-      /* offline demo mode */
+      /* offline demo */
     }
   },
   switchRole: () => {},
 
+  // Persist profile edits (including saved places) to Supabase
   updateRiderProfile: (updates) => {
+    let next;
     set((state) => {
-      const updated = { ...state.rider, ...updates };
-      const newSession = { ...state, rider: updated, customer: updated };
-      setStoredItem(AUTH_STORAGE_KEY, newSession);
-      return { rider: updated, customer: updated };
+      next = { ...state.rider, ...updates };
+      return { rider: next, customer: next };
     });
+    api.saveState({ profile: next, favorites: next.savedPlaces }).catch(() => set({ authError: 'Could not save profile' }));
   },
 
   resetAuthData: () => {
-    removeStoredItem(AUTH_STORAGE_KEY);
     api.setAuthToken(null);
-    set(demoSession());
+    set({
+      role: 'rider',
+      customer: HARDCODED_CUSTOMER,
+      rider: HARDCODED_CUSTOMER,
+      isAuthenticated: false,
+      token: null,
+    });
     get().bootstrap();
   },
 
   logout: () => {
-    removeStoredItem(AUTH_STORAGE_KEY);
     api.setAuthToken(null);
     set({
       role: 'rider',

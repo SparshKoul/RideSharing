@@ -15,6 +15,7 @@ export function useRide() {
   const isConnected = useRideStore((s) => s.isConnected);
   const loadCatalog = useRideStore((s) => s.loadCatalog);
   const loadRides = useRideStore((s) => s.loadRides);
+  const loadState = useRideStore((s) => s.loadState);
 
   const updateBookingDraft = useRideStore((s) => s.updateBookingDraft);
   const swapPickupAndDestination = useRideStore((s) => s.swapPickupAndDestination);
@@ -62,6 +63,7 @@ export function useRide() {
     isConnected,
     loadCatalog,
     loadRides,
+    loadState,
     riderTotalSpent,
     riderCompletedTripsCount: riderCompletedTrips.length,
     updateBookingDraft,
