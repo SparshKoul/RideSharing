@@ -1,8 +1,8 @@
 /**
- * Auth middleware
+ * Auth middleware - verifies the JWT issued by /api/auth/login or /register.
  */
 
-import jwt from 'jsonwebtoken';
+import { verifyToken } from '../utils/jwt.js';
 
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -12,8 +12,7 @@ export const authenticate = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = payload;
+    req.user = verifyToken(token);
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });

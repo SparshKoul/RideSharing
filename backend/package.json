@@ -3,23 +3,26 @@
   "version": "1.0.0",
   "private": true,
   "description": "Backend for RideFlow / RideEzz ride-sharing platform",
-  "main": "dist/index.js",
+  "type": "module",
+  "main": "src/main.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node src/main.js",
     "dev": "node --watch dist/index.js",
     "build": "tsc",
     "test": "jest"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.46.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^18.0.10",
     "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "pg": "^8.13.1",
-    "rate-limit": "^2.0.4",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

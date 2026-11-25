@@ -1,26 +1,35 @@
 /**
- * Payments routes
+ * Payments routes - uses Supabase client
  */
 
 import { Router } from 'express';
-import { query } from '../utils/db.js';
+import supabase from '../utils/db.js';
 
 const router = Router();
 
-// Process payment
+// Process payment - insert into payments table
 router.post('/process', async (req, res) => {
   const { rideId, amount, currency, method } = req.body;
   if (!rideId || !amount) {
     return res.status(400).json({ error: 'rideId and amount required' });
   }
-  const result = await query('INSERT INTO payments (id, ride_id, amount, currency, method, status) VALUES (gen_random_uuid(), $1, $2, $3, $4, $5)', [
-    rideId,
-    amount,
-    currency || 'INR',
-    method || 'upi',
-    'succeeded',
-  ]);
-  res.json(result.rows[0]);
+  try {
+    const { data, error } = await supabase
+      .from('payments')
+      .insert({
+        ride_id: rideId,
+        amount,
+        currency: currency || 'INR',
+        method: method || 'upi',
+        status: 'succeeded',
+      });
+    if (error) {
+      return res.status(500).json({ error: 'Failed to process payment' });
+    }
+    res.json({ id: data[0].id, amount: data[0].amount, status: data[0].status });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-export { router };
+export default router;

@@ -34,7 +34,7 @@ import { useRideStore } from '../../store/rideStore';
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const setBookingDetails = useRideStore((state) => state.setBookingDetails);
+  const updateBookingDraft = useRideStore((state) => state.updateBookingDraft);
 
   // Live Estimator State
   const [pickup, setPickup] = useState(DEFAULT_PICKUP);
@@ -48,13 +48,10 @@ export default function LandingPage() {
   const estimatedFare = calculateFare(selectedCategory, metrics.distanceKm, metrics.durationMins);
 
   const handleQuickBook = () => {
-    setBookingDetails({
+    updateBookingDraft({
       pickup,
       destination,
       category: selectedCategory,
-      distanceKm: metrics.distanceKm,
-      durationMins: metrics.durationMins,
-      estimatedFare,
     });
     setBookedFeedback(true);
     setTimeout(() => {
@@ -86,7 +83,7 @@ export default function LandingPage() {
             <a href="#classes" className="fb-navlink">Ride Classes</a>
             <a href="#steps" className="fb-navlink">How It Works</a>
             <a href="#perks" className="fb-navlink">Perks</a>
-            <a href="#safety" className="fb-navlink">Safety</a>
+            <a href="#rules" className="fb-navlink">Safety</a>
             <a href="#faq" className="fb-navlink">FAQ</a>
             <Link to="/help" className="fb-navlink">Support & Contact</Link>
           </nav>
@@ -129,7 +126,7 @@ export default function LandingPage() {
             <a href="#perks" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
               Perks
             </a>
-            <a href="#safety" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
+            <a href="#rules" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
               Safety & Security
             </a>
             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
@@ -637,116 +634,6 @@ export default function LandingPage() {
           </ul>
         </section>
 
-        {/* SECTION 4: RELIABILITY & SAFETY CHECKLIST */}
-        <section className="fb-section" aria-labelledby="rebuild" id="safety">
-          <header className="fb-head" data-fb-reveal="true">
-            <p className="fb-kicker">The secret weapon</p>
-            <h2 className="fb-h2" id="rebuild">
-              Engineered for <span className="fb-brush">safety & uptime.</span>
-            </h2>
-            <p className="fb-lead">
-              Every single trip on RideEzz is backed by end-to-end telemetry, verified driver background vetting, and rigorous vehicle safety checks.
-            </p>
-          </header>
-
-          <ul className="fb-check" data-fb-stagger="true">
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>Comprehensive Driver KYC</h3>
-                <p>Every captain undergoes police verification, driving history audits, and in-person onboarding.</p>
-              </div>
-            </li>
-
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>24/7 Live Route Telematics</h3>
-                <p>Our operations system tracks vehicle coordinates in real time. Detours trigger safety checks.</p>
-              </div>
-            </li>
-
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>Guaranteed Upfront Price Lock</h3>
-                <p>No sudden meter bumps or unexpected tolls. The quote shown before booking is the final invoice.</p>
-              </div>
-            </li>
-
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>Masked Anonymous Calling</h3>
-                <p>Connect with your driver securely through virtual relays. Your real mobile number is never exposed.</p>
-              </div>
-            </li>
-
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>Instant Real-Time Link Sharing</h3>
-                <p>Share a live trip link with family and friends displaying driver details, car plate, and live GPS map.</p>
-              </div>
-            </li>
-
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>Universal Cashless Settlement</h3>
-                <p>Settle instantly via Google Pay, PhonePe, Paytm, RuPay, Cards, Wallets, or direct cash.</p>
-              </div>
-            </li>
-
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>Air-Conditioned Comfort Standard</h3>
-                <p>Standardized temperature policy across all sedans & SUVs for a sweat-free journey.</p>
-              </div>
-            </li>
-
-            <li className="fb-check-item">
-              <span aria-hidden="true" className="fb-tick">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.4" />
-                </svg>
-              </span>
-              <div>
-                <h3>24-Hour Lost & Found Hub</h3>
-                <p>Misplaced a bag or phone? Our rapid recovery bridge reconnects you directly with your driver partner.</p>
-              </div>
-            </li>
-          </ul>
-        </section>
 
         {/* SECTION 5: SAFETY RULES & CRITERIA */}
         <section className="fb-section" aria-labelledby="rules" id="rules">

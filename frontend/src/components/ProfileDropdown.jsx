@@ -1,15 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { User, LogOut, RotateCcw, Shield, HelpCircle, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { User, LogOut, RotateCcw, Shield, HelpCircle, ChevronDown, CheckCircle2, Cloud, CloudOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useRide } from '../hooks/useRide';
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
-  const { currentUser, resetAuthData } = useAuth();
-  const { resetAllRideData, addToast } = useRide();
-  const navigate = useNavigate();
+  const { currentUser, resetAuthData, logout } = useAuth();
+  const { resetAllRideData, addToast, isConnected } = useRide();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -26,6 +25,12 @@ export default function ProfileDropdown() {
     resetAllRideData();
     setIsOpen(false);
     addToast('Customer account & demo ride data restored to defaults.', 'success');
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    addToast('Signed out. Use Sign In or Sign Up in the navbar.', 'info');
   };
 
   return (
@@ -70,6 +75,14 @@ export default function ProfileDropdown() {
               <CheckCircle2 size={11} className="text-[#D4FF00]" />
               <span>Customer ID: {currentUser?.id || 'CUST-8820'}</span>
             </div>
+            <div className={`inline-flex items-center gap-1.5 mt-2 ml-2 px-2 py-0.5 rounded font-neo-mono text-[10px] font-bold border uppercase ${
+              isConnected
+                ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300'
+                : 'bg-amber-500/10 border-amber-500/40 text-amber-300'
+            }`}>
+              {isConnected ? <Cloud size={11} /> : <CloudOff size={11} />}
+              <span>{isConnected ? 'Supabase Live' : 'Offline Demo'}</span>
+            </div>
           </div>
 
           {/* Menu items */}
@@ -99,6 +112,15 @@ export default function ProfileDropdown() {
             >
               <RotateCcw size={15} />
               <span>Reset Default Customer State</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-xs font-neo-grotesk font-semibold text-red-300 transition-colors cursor-pointer text-left"
+            >
+              <LogOut size={15} />
+              <span>Sign Out</span>
             </button>
           </div>
         </div>

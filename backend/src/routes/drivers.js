@@ -1,26 +1,43 @@
 /**
- * Drivers routes
+ * Drivers routes - uses Supabase client
  */
 
 import { Router } from 'express';
-import { query } from '../utils/db.js';
+import supabase from '../utils/db.js';
 
 const router = Router();
 
-// Get drivers
+// Get drivers - select from drivers table
 router.get('/', async (req, res) => {
-  const result = await query('SELECT id, name, email, rating, trips_completed FROM drivers');
-  res.json(result.rows);
+  try {
+    const { data, error } = await supabase
+      .from('drivers')
+      .select('*')
+      .order('rating', { ascending: false });
+    if (error) {
+      return res.status(500).json({ error: 'Failed to retrieve drivers' });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-// Update driver
+// Update driver - update driver profile
 router.post('/:id/update', async (req, res) => {
   const { id, rating, feedback } = req.body;
-  const result = await query('UPDATE drivers SET rating = $1, feedback = $2 WHERE id = $3 RETURNING *', [rating, feedback, id]);
-  if (!result.rows.length) {
-    return res.status(404).json({ error: 'Driver not found' });
+  try {
+    const { error } = await supabase
+      .from('drivers')
+      .update({ rating, feedback })
+      .eq('id', id);
+    if (error) {
+      return res.status(500).json({ error: 'Failed to update driver' });
+    }
+    res.json({ message: 'Driver updated' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
   }
-  res.json(result.rows[0]);
 });
 
-export { router };
+export default router;

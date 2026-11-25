@@ -1,17 +1,16 @@
 /**
- * Database configuration
+ * Supabase configuration
  */
 
-const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  database: process.env.DB_NAME || 'rideplatform',
-  user: process.env.DB_USER || 'rideplatform',
-  password: process.env.DB_PASSWORD || 'password',
-  timeout: 5000
-};
+import { createClient } from '@supabase/supabase-js';
+import winston from 'winston';
 
-export const getDBConfig = () => dbConfig;
+export const getSupabaseClient = () => {
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
+  );
+};
 
 /**
  * Logger setup
@@ -19,20 +18,23 @@ export const getDBConfig = () => dbConfig;
 
 export const getLogger = () => {
   if (process.env.NODE_ENV !== 'production') {
-    return require('winston').createLogger({
+    return winston.createLogger({
       level: process.env.LOG_LEVEL || 'info',
-      format: require('winston-logform').format(),
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+      ),
       transports: [
-        new require('winston-logform').transports.Console({
+        new winston.transports.Console({
           timeSeriesFormat: true,
         }),
-        new require('winston-daily-rotate-file').transports.DailyRotateFile({
+        new winston.transports.File({
           filename: './logs/app.log',
-          maxSize: '20m',
+          maxsize: '20m',
           maxFiles: '14d',
         }),
       ],
     });
   }
-  return require('winston').createLogger({ level: 'info' });
+  return winston.createLogger({ level: 'info' });
 };

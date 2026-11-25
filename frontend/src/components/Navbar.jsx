@@ -1,11 +1,21 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, Activity, UserCheck } from 'lucide-react';
+import { Zap, Activity, UserCheck, Cloud, CloudOff, LogIn, UserPlus } from 'lucide-react';
 import { useRide } from '../hooks/useRide';
+import { useAuth } from '../hooks/useAuth';
 import ProfileDropdown from './ProfileDropdown';
+import AuthModal from './AuthModal';
 
 export default function Navbar() {
-  const { activeRide } = useRide();
+  const { activeRide, isConnected } = useRide();
+  const { isAuthenticated, rider } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
+
+  const openAuth = (mode) => {
+    setAuthMode(mode);
+    setAuthOpen(true);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#0c1033]/95 backdrop-blur-md border-b-2 border-white/10 shadow-[0_4px_20px_rgba(10,14,46,0.6)] px-4 sm:px-6 lg:px-8 py-3">
@@ -68,16 +78,49 @@ export default function Navbar() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-2.5 sm:gap-3.5">
-          {/* Customer Badge */}
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#121033] border border-white/15 text-[#D4FF00] font-neo-mono text-[11px] font-bold uppercase">
-            <UserCheck size={13} className="text-[#D4FF00]" />
-            <span>Customer Verified</span>
-          </div>
+          {isAuthenticated ? (
+            <>
+              {/* Auth / connection badge */}
+              <div
+                title={rider?.email}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border bg-[#121033] border-white/15 text-[#D4FF00] font-neo-mono text-[11px] font-bold uppercase"
+              >
+                <UserCheck size={13} />
+                <span>Signed In • Live</span>
+                {isConnected && <Cloud size={12} className="opacity-60" />}
+              </div>
 
-          {/* Profile Dropdown */}
-          <ProfileDropdown />
+              {/* Profile Dropdown */}
+              <ProfileDropdown />
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => openAuth('login')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-white font-neo-mono text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                <LogIn size={14} className="text-[#D4FF00]" />
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => openAuth('register')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-[#08071E] bg-[#D4FF00] hover:bg-[#c2ec00] text-[#08071E] font-neo-mono text-[11px] font-black uppercase tracking-wider shadow-[2px_2px_0_#3B38F5] transition-all cursor-pointer"
+              >
+                <UserPlus size={14} />
+                <span className="hidden sm:inline">Sign Up</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      <AuthModal
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+        initialMode={authMode}
+      />
     </header>
   );
 }
