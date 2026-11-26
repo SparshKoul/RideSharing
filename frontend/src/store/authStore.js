@@ -13,7 +13,7 @@ export const useAuthStore = create((set, get) => ({
   driver: null,
   isAuthenticated: false,
   token: api.getAuthToken(),
-  isBootstrapping: false,
+  isBootstrapping: Boolean(api.getAuthToken()),
   authError: null,
 
   /** Load profile + favorites from Supabase into the session. */
@@ -38,13 +38,24 @@ export const useAuthStore = create((set, get) => ({
     }
     set({ isBootstrapping: true });
     try {
-      await api.me();
+      const user = await api.me();
+      // Restore the real role/identity from the DB, not the hardcoded fallback
+      set({
+        role: user.role || 'rider',
+        rider: { ...HARDCODED_CUSTOMER, ...user },
+        customer: { ...HARDCODED_CUSTOMER, ...user },
+      });
       await get().loadProfile();
       set({ isAuthenticated: true, token: api.getAuthToken(), authError: null });
       return true;
     } catch (err) {
-      api.setAuthToken(null);
-      set({ isAuthenticated: false, token: null, authError: 'Session expired, please sign in again' });
+      // Only a real auth failure should discard the token. A network blip must not.
+      if (err.status === 401 || err.status === 403) {
+        api.setAuthToken(null);
+        set({ isAuthenticated: false, token: null, authError: 'Session expired, please sign in again' });
+      } else {
+        set({ isAuthenticated: false, authError: 'Offline - could not verify session' });
+      }
       return false;
     } finally {
       set({ isBootstrapping: false });
@@ -118,7 +129,6 @@ export const useAuthStore = create((set, get) => ({
       isAuthenticated: false,
       token: null,
     });
-    get().loginAsRider();
   },
 
   logout: () => {

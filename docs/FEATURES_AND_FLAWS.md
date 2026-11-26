@@ -26,6 +26,8 @@ root cause, and the exact fix applied. It doubles as a handover/evaluation refer
 | Ride booking with server-side fare calculation | `POST /api/rides/book` | ✅ |
 | Ride list / detail with joined data | `GET /api/rides`, `/api/rides/:id` | ✅ |
 | Ride status lifecycle | `POST /api/rides/:id/status`, `/accept`, `/driverComplete` | ✅ |
+| Estimated vs final fare separation | `estimated_fare` / `final_fare` columns, `0006` | ✅ |
+| Persisted ratings & feedback | `POST /api/rides/:id/rate`, `0006` | ✅ |
 | Payments endpoint | `POST /api/payments/process` | ⚠️ simulated |
 | Analytics read endpoints | `GET /api/analytics/earnings`, `/trips` | ✅ |
 | Health check | `GET /health` | ✅ |
@@ -114,6 +116,22 @@ root cause, and the exact fix applied. It doubles as a handover/evaluation refer
 | 38 | Quick-book on landing page crashed | Called `state.setBookingDetails`, which didn't exist | Changed to `updateBookingDraft` |
 | 39 | `RegisterPage` called `loginAsDriver`, which didn't exist | Stale hook API in an unrouted page | Removed the page from routing |
 | 40 | Duplicate toast rendering | `Toast` mounted in `App.jsx` and in each layout | Kept only the global instance |
+
+### 2.6 Critical bugs found in the follow-up site audit (and fixed)
+
+These were found by a full audit after the first implementation was complete.
+See `docs/AUDIT_REPORT.md` for the complete audit.
+
+| # | Symptom | Root cause | Fix |
+|---|---|---|---|
+| 41 | Reloading a protected page redirected to `/` even with a valid JWT | `ProtectedRoute` checked `isAuthenticated` before `bootstrap()` (which runs in an effect) finished | `isBootstrapping` now starts `true` when a token exists; `ProtectedRoute` shows a "Restoring session..." loader until it resolves |
+| 42 | A logged-in driver became a rider after every refresh | `bootstrap()` called `api.me()` but discarded the response, leaving `role` at its default `'rider'` | `bootstrap()` now sets `role`, `rider`, and `customer` from the `/api/auth/me` response |
+| 43 | A brief network error permanently logged the user out | `bootstrap()` cleared the JWT for *every* `api.me()` failure | API errors now carry `status`; the token is cleared only on 401/403, network errors keep it and show "Offline" |
+| 44 | Driver preview showed the wrong driver and zero rides | It compared a slug id (`driver-1`) against DB UUIDs (`rider.id`, `ride.driverId`) | Normalized both sides with `toApiId()` before comparing |
+| 45 | Assigned driver disappeared after reload | Status endpoint set `driver_assigned` but never wrote `driver_id`; the assignment was local-only | Frontend passes `driverId` (mapped slug → UUID); backend status route persists it |
+| 46 | Cancelled rides showed ₹0 and in-progress rides showed a "final" fare | `adaptRide` used `final_fare` for both estimated and final, and the backend set `final_fare` at booking time | Added `estimated_fare` column (`0006_ride_fields.sql`); backend sets it at booking and leaves `final_fare` null until completion; adapter only exposes `finalFare` for `completed` rides |
+| 47 | Ratings were silently discarded on refresh | `submitRideRating` only updated local Zustand state | Added `rating`/`rating_feedback` columns (`0006`), `POST /api/rides/:id/rate`, `api.submitRating()`, and adapter reads the stored values |
+| 48 | "Reset default state" silently logged the user into the demo account | `resetAuthData()` called `loginAsRider()` as a side effect | Removed the side effect — reset now only clears local/session state |
 
 ---
 

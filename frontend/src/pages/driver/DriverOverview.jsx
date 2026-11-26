@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Car, Activity, ArrowRight, AlertCircle } from 'lucide-react';
-import { getDrivers, getRides } from '../../utils/api';
+import { getDrivers, getRides, toApiId } from '../../utils/api';
 import { useAuth } from '../../hooks/useAuth';
 import StatusBadge from '../../components/StatusBadge';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
@@ -17,11 +17,16 @@ export default function DriverOverview() {
     (async () => {
       try {
         const drivers = await getDrivers();
-        const me = drivers.find((d) => d.id === rider?.id) || drivers.find((d) => d.id === 'driver-1') || drivers[0];
+        // adaptDriver gives seeded drivers a slug id; new ones keep their UUID.
+        // Normalize to the DB UUID before comparing with the logged-in user id.
+        const me = drivers.find((d) => toApiId(d.id, 'drivers') === rider?.id)
+          || drivers.find((d) => d.id === 'driver-1')
+          || drivers[0];
         setDriver(me);
         if (me) {
           const all = await getRides(false);
-          setRides(all.filter((r) => r.driverId === me.id));
+          const myId = toApiId(me.id, 'drivers');
+          setRides(all.filter((r) => r.driverId === myId));
         }
       } catch (err) {
         setError(err.message || 'Could not load driver data');

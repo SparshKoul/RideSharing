@@ -107,7 +107,8 @@ router.post('/book', authenticate, async (req, res) => {
         category_id: categoryId,
         status: 'searching',
         created_by: req.user.id,
-        final_fare: finalFare,
+        estimated_fare: finalFare,
+        final_fare: null,
         driver_earnings: driverEarnings,
       })
       .select('*')
@@ -133,6 +134,7 @@ router.post('/:id/status', authenticate, async (req, res) => {
     const updates = { status, updated_at: new Date().toISOString() };
     if (status === 'completed') updates.completed_at = new Date().toISOString();
     if (req.body.finalFare != null) updates.final_fare = req.body.finalFare;
+    if (status === 'driver_assigned' && req.body.driverId) updates.driver_id = req.body.driverId;
 
     const { data, error } = await supabase
       .from('rides')
@@ -177,6 +179,29 @@ router.post('/:id/driverComplete', authenticate, async (req, res) => {
       .eq('id', id);
     if (error) return res.status(500).json({ error: 'Failed to complete ride' });
     res.json({ message: 'Ride completed' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Submit a rating for a completed ride
+router.post('/:id/rate', authenticate, async (req, res) => {
+  const id = req.params.id || req.body.id;
+  const { rating, feedback } = req.body;
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ error: 'Rating must be between 1 and 5' });
+  }
+  try {
+    const { data, error } = await supabase
+      .from('rides')
+      .update({ rating, rating_feedback: feedback || null, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select('*')
+      .maybeSingle();
+    if (error) return res.status(500).json({ error: 'Failed to save rating' });
+
+    const [ride] = await enrichRides(data ? [data] : []);
+    res.json(ride || { message: 'Rating saved' });
   } catch (err) {
     res.status(500).json({ error: 'Internal server error' });
   }

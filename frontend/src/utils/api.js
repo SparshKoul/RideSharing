@@ -75,7 +75,9 @@ async function request(path, { method = 'GET', body, auth = true } = {}) {
 
   const data = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new Error(data?.error || `Request failed (${response.status})`);
+    const error = new Error(data?.error || `Request failed (${response.status})`);
+    error.status = response.status;
+    throw error;
   }
   return data;
 }
@@ -135,17 +137,19 @@ export const adaptRide = (row) => {
     category,
     distanceKm: metrics.distanceKm,
     durationMins: metrics.durationMins,
-    estimatedFare: Number(row.final_fare ?? 0),
-    finalFare: row.final_fare == null ? null : Number(row.final_fare),
+    estimatedFare: Number(row.estimated_fare ?? row.final_fare ?? 0),
+    // A ride has a final fare only once it is completed
+    finalFare: row.status === 'completed' && row.final_fare != null ? Number(row.final_fare) : null,
     driverEarnings: Number(row.driver_earnings ?? 0),
+    // No payment method column in DB yet - rides are demo/UPI by default
     paymentMethod: 'UPI',
     status: row.status,
     createdAt: row.created_at,
     completedAt: row.completed_at,
     assignedDriver: adaptDriver(row.assignedDriver),
     cancellationReason: row.cancellation_reason || null,
-    rating: null,
-    ratingFeedback: '',
+    rating: row.rating ?? null,
+    ratingFeedback: row.rating_feedback || '',
   };
 };
 
@@ -196,6 +200,9 @@ export const bookRide = async ({ pickup, destination, category }) => {
 
 export const updateRideStatus = async (id, status, extra = {}) =>
   adaptRide(await request(`/rides/${id}/status`, { method: 'POST', body: { status, ...extra } }));
+
+export const submitRating = (id, rating, feedback) =>
+  request(`/rides/${id}/rate`, { method: 'POST', body: { rating, feedback } });
 
 export const acceptRide = async (id) =>
   request(`/rides/${id}/accept`, { method: 'POST', body: {} });
