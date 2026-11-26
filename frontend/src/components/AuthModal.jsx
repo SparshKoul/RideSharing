@@ -10,6 +10,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   const { loadCatalog, loadRides, loadState, addToast } = useRide();
 
   const [mode, setMode] = useState(initialMode);
+  const [role, setRole] = useState('rider');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -37,11 +38,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
     setIsSubmitting(true);
     try {
       if (mode === 'login') {
-        await login(email, password);
+        await login(email, password, role);
         addToast(`Welcome back, ${email}`, 'success');
       } else {
-        await register({ fullName, email, phone, password });
-        addToast('Account created. Welcome to RideEzz!', 'success');
+        await register({ fullName, email, phone, password, role });
+        addToast(`${role === 'driver' ? 'Driver' : 'Rider'} account created. Welcome to RideEzz!`, 'success');
       }
       await Promise.all([loadCatalog(), loadRides(), loadState()]);
       onClose();
@@ -54,7 +55,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
   const fillDemo = () => {
     setMode('login');
-    setEmail('demo.rider@rideezz.demo');
+    setEmail(role === 'driver' ? 'demo.driver@rideezz.demo' : 'demo.rider@rideezz.demo');
     setPassword('demo1234');
     setError('');
   };
@@ -90,8 +91,31 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
               RIDE<span className="text-[#3B38F5]">EZZ</span>
             </div>
             <div className="font-neo-mono text-[9px] font-bold text-neutral-500 uppercase tracking-widest">
-              Customer Account
+              Rider & Driver Access
             </div>
+          </div>
+        </div>
+
+        {/* Role selector */}
+        <div className="mb-4">
+          <span className="block font-neo-mono text-[10px] font-black uppercase text-neutral-600 mb-1.5">
+            Continue as
+          </span>
+          <div className="flex gap-1 p-1 rounded-xl bg-[#F5F6FF] border-2 border-[#08071E]">
+            {['rider', 'driver'].map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => { setRole(option); setError(''); }}
+                className={`flex-1 py-2 rounded-lg font-neo-heading text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${
+                  role === option
+                    ? 'bg-[#08071E] text-[#D4FF00]'
+                    : 'text-neutral-500 hover:text-[#08071E]'
+                }`}
+              >
+                {option}
+              </button>
+            ))}
           </div>
         </div>
 

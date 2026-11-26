@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Car, Activity, ArrowRight, AlertCircle } from 'lucide-react';
-import { getDrivers, getRides, toApiId } from '../../utils/api';
+import { getDrivers, getRides } from '../../utils/api';
+import { useAuth } from '../../hooks/useAuth';
 import StatusBadge from '../../components/StatusBadge';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 
@@ -10,22 +11,23 @@ export default function DriverOverview() {
   const [driver, setDriver] = useState(null);
   const [rides, setRides] = useState([]);
   const [error, setError] = useState('');
+  const { rider } = useAuth();
 
   useEffect(() => {
     (async () => {
       try {
         const drivers = await getDrivers();
-        const demo = drivers.find((d) => d.id === 'driver-1') || drivers[0];
-        setDriver(demo);
-        if (demo) {
+        const me = drivers.find((d) => d.id === rider?.id) || drivers.find((d) => d.id === 'driver-1') || drivers[0];
+        setDriver(me);
+        if (me) {
           const all = await getRides(false);
-          setRides(all.filter((r) => r.driverId === toApiId(demo.id, 'drivers')));
+          setRides(all.filter((r) => r.driverId === me.id));
         }
       } catch (err) {
         setError(err.message || 'Could not load driver data');
       }
     })();
-  }, []);
+  }, [rider?.id]);
 
   if (error) {
     return (

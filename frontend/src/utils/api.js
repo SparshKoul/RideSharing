@@ -151,10 +151,10 @@ export const adaptRide = (row) => {
 
 /* ------------------------------- auth ------------------------------- */
 
-export const login = async (email, password) => {
+export const login = async (email, password, role) => {
   const data = await request('/auth/login', {
     method: 'POST',
-    body: { email, password },
+    body: { email, password, ...(role ? { role } : {}) },
     auth: false,
   });
   setAuthToken(data.token);

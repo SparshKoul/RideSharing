@@ -9,14 +9,19 @@ import {
 import { useAuth } from '../hooks/useAuth';
 
 export default function Sidebar() {
-  const { currentUser } = useAuth();
+  const { currentUser, role } = useAuth();
 
-  const customerNav = [
-    { to: '/rider/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/rider/book', label: 'Book a Ride', icon: Navigation },
-    { to: '/rider/trips', label: 'My Trips', icon: Clock },
-    { to: '/rider/profile', label: 'My Profile', icon: User },
-  ];
+  const customerNav = role === 'driver'
+    ? [
+        { to: '/driver', label: 'Driver Portal', icon: LayoutDashboard },
+        { to: '/rider/profile', label: 'My Profile', icon: User },
+      ]
+    : [
+        { to: '/rider/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { to: '/rider/book', label: 'Book a Ride', icon: Navigation },
+        { to: '/rider/trips', label: 'My Trips', icon: Clock },
+        { to: '/rider/profile', label: 'My Profile', icon: User },
+      ];
 
   return (
     <aside className="hidden md:flex flex-col w-64 shrink-0 bg-[#0c1033]/90 backdrop-blur-sm border-r-2 border-white/10 min-h-[calc(100vh-65px)] p-4">
@@ -27,7 +32,7 @@ export default function Sidebar() {
             Active Mode
           </span>
           <span className="font-neo-mono text-[9px] font-black uppercase px-2 py-0.5 rounded bg-[#D4FF00] text-[#08071E]">
-            CUSTOMER PASS
+            {role === 'driver' ? 'DRIVER PASS' : 'CUSTOMER PASS'}
           </span>
         </div>
         <div className="font-neo-heading text-sm font-black uppercase text-white truncate">

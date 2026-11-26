@@ -51,10 +51,10 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  login: async (email, password) => {
+  login: async (email, password, role) => {
     set({ authError: null });
     try {
-      const { user } = await api.login(email, password);
+      const { user } = await api.login(email, password, role);
       const rider = {
         ...HARDCODED_CUSTOMER,
         id: user.id,
@@ -81,7 +81,7 @@ export const useAuthStore = create((set, get) => ({
         name: user.name || payload.fullName || user.email.split('@')[0],
         phone: payload.phone || '',
       };
-      set({ role: 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
+      set({ role: user.role || 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
       await get().loadProfile();
       return user;
     } catch (err) {

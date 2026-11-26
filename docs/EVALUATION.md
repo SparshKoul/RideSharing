@@ -58,7 +58,11 @@ curl http://localhost:3001/api/drivers
 curl http://localhost:3001/api/analytics/trips
 ```
 
-Demo account: `demo.rider@rideezz.demo` / `demo1234`
+Demo accounts (select the matching role in the auth modal):
+- Rider: `demo.rider@rideezz.demo` / `demo1234`
+- Driver: `demo.driver@rideezz.demo` / `demo1234`
+
+A rider account is rejected when "Driver" is selected (and vice versa) — the role is checked against the `users` table on the backend.
 
 ---
 
