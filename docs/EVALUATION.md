@@ -38,7 +38,11 @@ cd frontend && npm run dev       # http://localhost:5173
    - Status advances through `driver_assigned → driver_arriving → in_progress → completed`
    - Each transition is persisted via `POST /api/rides/:id/status`
 
-5. **Proof in Supabase** — open the table editor and show:
+5. **Driver view** — click *Driver View* in the navbar
+   - Driver profile (rating, trips, vehicle) and assigned rides, all from Supabase
+   - Labelled as a read-only preview; full workflow is roadmap
+
+6. **Proof in Supabase** — open the table editor and show:
    - `users` — the account you just created
    - `rides` — the ride you just booked, with its final status
    - `user_state` — the saved booking draft / profile
@@ -70,7 +74,8 @@ Demo account: `demo.rider@rideezz.demo` / `demo1234`
 | Profile / favorites / draft persistence | ✅ | `user_state` table |
 | Analytics read endpoints | ✅ | earnings + trips |
 | Payments processing | ⚠️ | endpoint exists, simulated |
-| Driver-side workflow pages | ⬜ | not built |
+| Driver preview (profile + assigned rides) | ✅ | read-only, `/driver` |
+| Full driver workflow (accept/arrive/complete UI) | ⬜ | roadmap |
 | Ratings & reviews persistence | ⬜ | local only |
 | Real map / GPS telemetry | ⬜ | visual mock |
 | Deployment / CI | ⬜ | local only |

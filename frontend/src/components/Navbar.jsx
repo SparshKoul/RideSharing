@@ -69,6 +69,12 @@ export default function Navbar() {
             Trips
           </Link>
           <Link
+            to="/driver"
+            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#D4FF00] hover:bg-white/5 transition-colors"
+          >
+            Driver View
+          </Link>
+          <Link
             to="/help"
             className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-[#d8fc38] hover:bg-white/5 transition-colors"
           >

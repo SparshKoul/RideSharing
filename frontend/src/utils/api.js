@@ -126,6 +126,7 @@ export const adaptRide = (row) => {
   return {
     id: row.id,
     riderId: row.rider_id,
+    driverId: row.driver_id,
     riderName: HARDCODED_CUSTOMER.name,
     riderPhone: HARDCODED_CUSTOMER.phone,
     riderRating: HARDCODED_CUSTOMER.rating,
