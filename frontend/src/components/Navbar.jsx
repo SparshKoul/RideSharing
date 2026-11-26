@@ -8,7 +8,7 @@ import AuthModal from './AuthModal';
 
 export default function Navbar() {
   const { activeRide, isConnected } = useRide();
-  const { isAuthenticated, rider } = useAuth();
+  const { isAuthenticated, rider, role } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
 
@@ -22,7 +22,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div className="flex items-center gap-3">
-          <Link to="/rider/dashboard" className="flex items-center gap-2.5 group">
+          <Link to={role === 'driver' ? '/driver' : '/rider/dashboard'} className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#D4FF00] border-2 border-[#08071E] shadow-[2px_2px_0_#3B38F5] flex items-center justify-center text-[#08071E] font-black group-hover:scale-105 transition-transform">
               <Zap size={20} fill="#08071E" />
             </div>
@@ -67,6 +67,12 @@ export default function Navbar() {
             className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#A5A1CE] hover:text-white hover:bg-white/5 transition-colors"
           >
             Trips
+          </Link>
+          <Link
+            to="/driver"
+            className="px-3 py-1.5 rounded-lg text-xs font-neo-mono font-bold uppercase tracking-wider text-[#D4FF00] hover:bg-white/5 transition-colors"
+          >
+            Driver View
           </Link>
           <Link
             to="/help"

@@ -31,9 +31,14 @@ import { RIDE_CATEGORIES } from '../../data/rideCategories';
 import { getRouteMetrics, calculateFare } from '../../utils/fareCalculator';
 import { formatCurrency, formatDistance, formatDuration } from '../../utils/formatters';
 import { useRideStore } from '../../store/rideStore';
+import { useAuth } from '../../hooks/useAuth';
+import AuthModal from '../../components/AuthModal';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
   const updateBookingDraft = useRideStore((state) => state.updateBookingDraft);
 
   // Live Estimator State
@@ -78,30 +83,57 @@ export default function LandingPage() {
             </span>
           </Link>
 
-          {/* Main Navigation Links */}
+          {/* Compact desktop navigation */}
           <nav className="fb-navbar-nav" aria-label="Main Navigation">
             <a href="#classes" className="fb-navlink">Ride Classes</a>
             <a href="#steps" className="fb-navlink">How It Works</a>
-            <a href="#perks" className="fb-navlink">Perks</a>
-            <a href="#rules" className="fb-navlink">Safety</a>
             <a href="#faq" className="fb-navlink">FAQ</a>
-            <Link to="/help" className="fb-navlink">Support & Contact</Link>
           </nav>
 
           <div className="fb-navbar-actions">
-            <Link
-              to="/rider/dashboard"
-              className="fb-navlink fb-navlink-accent hidden sm:inline-flex"
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/rider/book"
-              className="fb-btn fb-btn-lime fb-btn-sm font-neo-heading text-xs font-black uppercase tracking-wider"
-            >
-              Book Ride
-              <span aria-hidden="true">→</span>
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/rider/dashboard"
+                className="fb-navlink fb-navlink-accent hidden sm:inline-flex"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('login'); setAuthOpen(true); }}
+                  className="fb-navlink hidden sm:inline-flex cursor-pointer"
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('register'); setAuthOpen(true); }}
+                  className="fb-navlink fb-navlink-accent hidden sm:inline-flex cursor-pointer"
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
+            {isAuthenticated ? (
+              <Link
+                to="/rider/book"
+                className="fb-btn fb-btn-lime fb-btn-sm font-neo-heading text-xs font-black uppercase tracking-wider"
+              >
+                Book Ride
+                <span aria-hidden="true">→</span>
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setAuthMode('login'); setAuthOpen(true); }}
+                className="fb-btn fb-btn-lime fb-btn-sm font-neo-heading text-xs font-black uppercase tracking-wider cursor-pointer"
+              >
+                Book Ride
+                <span aria-hidden="true">→</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -123,18 +155,9 @@ export default function LandingPage() {
             <a href="#steps" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
               How It Works
             </a>
-            <a href="#perks" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
-              Perks
-            </a>
-            <a href="#rules" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
-              Safety & Security
-            </a>
             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
               FAQ
             </a>
-            <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="fb-mobile-navlink">
-              Support & Contact
-            </Link>
             <Link
               to="/rider/dashboard"
               onClick={() => setMobileMenuOpen(false)}
@@ -1009,6 +1032,11 @@ export default function LandingPage() {
         </div>
       </footer>
 
+      <AuthModal
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+        initialMode={authMode}
+      />
     </div>
   );
 }

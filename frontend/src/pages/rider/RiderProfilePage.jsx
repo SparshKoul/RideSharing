@@ -43,11 +43,9 @@ export default function RiderProfilePage() {
 
       {/* Profile Overview Card */}
       <div className="bg-[#121033] rounded-3xl border-2 border-white/15 p-6 sm:p-8 shadow-[5px_5px_0_#08071E] flex flex-col sm:flex-row items-center gap-6">
-        <img
-          src={currentUser?.avatar || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80'}
-          alt="Avatar"
-          className="w-20 h-20 rounded-2xl object-cover border-3 border-[#08071E] shadow-[3px_3px_0_#D4FF00]"
-        />
+        <div className="w-20 h-20 rounded-2xl bg-[#D4FF00] border-3 border-[#08071E] shadow-[3px_3px_0_#D4FF00] flex items-center justify-center text-[#08071E] font-black text-3xl shrink-0">
+          {(currentUser?.name || 'C').charAt(0).toUpperCase()}
+        </div>
 
         <div className="text-center sm:text-left flex-1">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">

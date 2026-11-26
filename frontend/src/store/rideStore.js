@@ -282,7 +282,9 @@ export const useRideStore = create((set, get) => ({
     });
 
     if (assigned) {
-      api.updateRideStatus(rideId, 'driver_assigned').catch(() => set({ isConnected: false }));
+      api.updateRideStatus(rideId, 'driver_assigned', {
+        driverId: api.toApiId(driver.id, 'drivers'),
+      }).catch(() => set({ isConnected: false }));
       get().addToast(`Driver ${driver.name} accepted your ride! Heading towards pickup.`, 'success');
     }
   },
@@ -377,6 +379,7 @@ export const useRideStore = create((set, get) => ({
       );
       return { rides: updatedRides };
     });
+    api.submitRating(rideId, rating, comment).catch(() => set({ isConnected: false }));
     get().addToast("Thank you for your rating!", "success");
   },
 

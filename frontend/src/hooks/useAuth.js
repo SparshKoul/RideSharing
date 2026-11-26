@@ -3,6 +3,7 @@ import { HARDCODED_CUSTOMER } from '../data/riders';
 
 export function useAuth() {
   const rider = useAuthStore((s) => s.rider) || HARDCODED_CUSTOMER;
+  const role = useAuthStore((s) => s.role);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const isBootstrapping = useAuthStore((s) => s.isBootstrapping);
   const authError = useAuthStore((s) => s.authError);
@@ -16,15 +17,15 @@ export function useAuth() {
   const resetAuthData = useAuthStore((s) => s.resetAuthData);
 
   return {
-    role: 'rider',
+    role,
     rider,
     customer: rider,
     currentUser: rider,
     isAuthenticated,
     isBootstrapping,
     authError,
-    isRider: true,
-    isDriver: false,
+    isRider: role === 'rider',
+    isDriver: role === 'driver',
     login,
     register,
     loginAsRider,

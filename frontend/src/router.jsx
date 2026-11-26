@@ -17,8 +17,8 @@ import BookingConfirmation from './pages/rider/BookingConfirmation';
 import ActiveRidePage from './pages/rider/ActiveRidePage';
 import TripsPage from './pages/rider/TripsPage';
 import TripDetailsPage from './pages/rider/TripDetailsPage';
-import FavoritesPage from './pages/rider/FavoritesPage';
 import RiderProfilePage from './pages/rider/RiderProfilePage';
+import DriverOverview from './pages/driver/DriverOverview';
 
 export const router = createBrowserRouter([
   // Public Routes
@@ -54,20 +54,19 @@ export const router = createBrowserRouter([
       { path: 'ride/:id', element: <ActiveRidePage /> },
       { path: 'trips', element: <TripsPage /> },
       { path: 'trips/:id', element: <TripDetailsPage /> },
-      { path: 'payments', element: <Navigate to="/rider/dashboard" replace /> },
-      { path: 'favorites', element: <FavoritesPage /> },
       { path: 'profile', element: <RiderProfilePage /> },
     ],
   },
 
-  // Driver route redirects to Customer Console
+  // Driver preview (read-only, backed by Supabase)
   {
     path: '/driver',
-    element: <Navigate to="/rider/dashboard" replace />,
-  },
-  {
-    path: '/driver/*',
-    element: <Navigate to="/rider/dashboard" replace />,
+    element: (
+      <ProtectedRoute>
+        <PublicLayout />
+      </ProtectedRoute>
+    ),
+    children: [{ index: true, element: <DriverOverview /> }],
   },
 
   // Fallback

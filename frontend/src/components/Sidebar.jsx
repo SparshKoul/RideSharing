@@ -4,24 +4,24 @@ import {
   LayoutDashboard,
   Navigation,
   Clock,
-  Bookmark,
   User,
-  HelpCircle,
-  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Sidebar() {
-  const { currentUser } = useAuth();
+  const { currentUser, role } = useAuth();
 
-  const customerNav = [
-    { to: '/rider/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/rider/book', label: 'Book a Ride', icon: Navigation },
-    { to: '/rider/trips', label: 'My Trips', icon: Clock },
-    { to: '/rider/favorites', label: 'Saved Places', icon: Bookmark },
-    { to: '/rider/profile', label: 'Customer Profile', icon: User },
-    { to: '/help', label: 'Help Center', icon: HelpCircle },
-  ];
+  const customerNav = role === 'driver'
+    ? [
+        { to: '/driver', label: 'Driver Portal', icon: LayoutDashboard },
+        { to: '/rider/profile', label: 'My Profile', icon: User },
+      ]
+    : [
+        { to: '/rider/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { to: '/rider/book', label: 'Book a Ride', icon: Navigation },
+        { to: '/rider/trips', label: 'My Trips', icon: Clock },
+        { to: '/rider/profile', label: 'My Profile', icon: User },
+      ];
 
   return (
     <aside className="hidden md:flex flex-col w-64 shrink-0 bg-[#0c1033]/90 backdrop-blur-sm border-r-2 border-white/10 min-h-[calc(100vh-65px)] p-4">
@@ -32,7 +32,7 @@ export default function Sidebar() {
             Active Mode
           </span>
           <span className="font-neo-mono text-[9px] font-black uppercase px-2 py-0.5 rounded bg-[#D4FF00] text-[#08071E]">
-            CUSTOMER PASS
+            {role === 'driver' ? 'DRIVER PASS' : 'CUSTOMER PASS'}
           </span>
         </div>
         <div className="font-neo-heading text-sm font-black uppercase text-white truncate">
@@ -69,15 +69,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Verified Customer Badge */}
-      <div className="pt-4 border-t border-white/10 mt-auto">
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2.5">
-          <ShieldCheck size={18} className="text-[#D4FF00] shrink-0" />
-          <div className="text-[10px] font-neo-mono uppercase leading-tight text-[#A5A1CE]">
-            Hardcoded Customer Profile: <span className="text-white font-bold">{currentUser?.name}</span>
-          </div>
-        </div>
-      </div>
+
     </aside>
   );
 }

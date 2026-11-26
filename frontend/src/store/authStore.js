@@ -13,7 +13,7 @@ export const useAuthStore = create((set, get) => ({
   driver: null,
   isAuthenticated: false,
   token: api.getAuthToken(),
-  isBootstrapping: false,
+  isBootstrapping: Boolean(api.getAuthToken()),
   authError: null,
 
   /** Load profile + favorites from Supabase into the session. */
@@ -30,29 +30,48 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  /** Restore a session only from an existing DB-issued JWT - never auto-login. */
   bootstrap: async () => {
-    if (api.getAuthToken()) {
-      await get().loadProfile();
-      set({ isAuthenticated: true });
-      return;
+    if (!api.getAuthToken()) {
+      set({ isAuthenticated: false, isBootstrapping: false });
+      return false;
     }
     set({ isBootstrapping: true });
     try {
-      await api.login(DEMO_EMAIL, DEMO_PASSWORD);
+      const user = await api.me();
+      // Restore the real role/identity from the DB, not the hardcoded fallback
+      set({
+        role: user.role || 'rider',
+        rider: { ...HARDCODED_CUSTOMER, ...user },
+        customer: { ...HARDCODED_CUSTOMER, ...user },
+      });
       await get().loadProfile();
-      set({ token: api.getAuthToken(), isAuthenticated: true, authError: null });
+      set({ isAuthenticated: true, token: api.getAuthToken(), authError: null });
+      return true;
     } catch (err) {
-      set({ authError: err.message });
+      // Only a real auth failure should discard the token. A network blip must not.
+      if (err.status === 401 || err.status === 403) {
+        api.setAuthToken(null);
+        set({ isAuthenticated: false, token: null, authError: 'Session expired, please sign in again' });
+      } else {
+        set({ isAuthenticated: false, authError: 'Offline - could not verify session' });
+      }
+      return false;
     } finally {
       set({ isBootstrapping: false });
     }
   },
 
-  login: async (email, password) => {
+  login: async (email, password, role) => {
     set({ authError: null });
     try {
-      const { user } = await api.login(email, password);
-      const rider = { ...HARDCODED_CUSTOMER, id: user.id, email: user.email };
+      const { user } = await api.login(email, password, role);
+      const rider = {
+        ...HARDCODED_CUSTOMER,
+        id: user.id,
+        email: user.email,
+        name: user.name || email.split('@')[0],
+      };
       set({ role: user.role || 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
       await get().loadProfile();
       return user;
@@ -70,10 +89,10 @@ export const useAuthStore = create((set, get) => ({
         ...HARDCODED_CUSTOMER,
         id: user.id,
         email: user.email,
-        name: payload.fullName || HARDCODED_CUSTOMER.name,
-        phone: payload.phone || HARDCODED_CUSTOMER.phone,
+        name: user.name || payload.fullName || user.email.split('@')[0],
+        phone: payload.phone || '',
       };
-      set({ role: 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
+      set({ role: user.role || 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
       await get().loadProfile();
       return user;
     } catch (err) {
@@ -110,7 +129,6 @@ export const useAuthStore = create((set, get) => ({
       isAuthenticated: false,
       token: null,
     });
-    get().bootstrap();
   },
 
   logout: () => {
