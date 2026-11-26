@@ -4,10 +4,7 @@ import {
   LayoutDashboard,
   Navigation,
   Clock,
-  Bookmark,
   User,
-  HelpCircle,
-  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
@@ -18,9 +15,7 @@ export default function Sidebar() {
     { to: '/rider/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/rider/book', label: 'Book a Ride', icon: Navigation },
     { to: '/rider/trips', label: 'My Trips', icon: Clock },
-    { to: '/rider/favorites', label: 'Saved Places', icon: Bookmark },
-    { to: '/rider/profile', label: 'Customer Profile', icon: User },
-    { to: '/help', label: 'Help Center', icon: HelpCircle },
+    { to: '/rider/profile', label: 'My Profile', icon: User },
   ];
 
   return (
@@ -69,15 +64,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Verified Customer Badge */}
-      <div className="pt-4 border-t border-white/10 mt-auto">
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2.5">
-          <ShieldCheck size={18} className="text-[#D4FF00] shrink-0" />
-          <div className="text-[10px] font-neo-mono uppercase leading-tight text-[#A5A1CE]">
-            Hardcoded Customer Profile: <span className="text-white font-bold">{currentUser?.name}</span>
-          </div>
-        </div>
-      </div>
+
     </aside>
   );
 }

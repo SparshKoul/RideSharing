@@ -16,6 +16,7 @@ const DEMO_PASSWORD = 'demo1234';
 const toPublicUser = (row) => ({
   id: row.id,
   email: row.email,
+  name: row.full_name || row.email?.split('@')[0] || 'Rider',
   role: row.role || 'rider',
   accountType: row.account_type || 'regular',
   createdAt: row.created_at,
@@ -25,7 +26,7 @@ const toPublicUser = (row) => ({
 const ensureDemoUser = async () => {
   const { data: existing } = await supabase
     .from('users')
-    .select('id, password_hash')
+    .select('id, password_hash, full_name')
     .eq('email', DEMO_EMAIL)
     .maybeSingle();
 
@@ -35,15 +36,19 @@ const ensureDemoUser = async () => {
     await supabase.from('users').insert({
       email: DEMO_EMAIL,
       password_hash: hash,
+      full_name: 'Demo Rider',
       role: 'rider',
       account_type: 'regular',
     });
-  } else if (!existing.password_hash || existing.password_hash.length < 20) {
-    // The seed file stores a plain placeholder - upgrade it.
-    await supabase
-      .from('users')
-      .update({ password_hash: hash })
-      .eq('id', existing.id);
+  } else {
+    const updates = {};
+    if (!existing.password_hash || existing.password_hash.length < 20) {
+      updates.password_hash = hash;
+    }
+    if (!existing.full_name) updates.full_name = 'Demo Rider';
+    if (Object.keys(updates).length) {
+      await supabase.from('users').update(updates).eq('id', existing.id);
+    }
   }
 };
 
@@ -100,6 +105,7 @@ router.post('/register', async (req, res) => {
       .insert({
         email,
         password_hash: bcrypt.hashSync(password, 10),
+        full_name: fullName || email.split('@')[0],
         role: 'rider',
         account_type: 'regular',
       })

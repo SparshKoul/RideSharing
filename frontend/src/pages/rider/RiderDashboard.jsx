@@ -2,24 +2,18 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Navigation,
-  MapPin,
   ArrowRight,
-  ArrowUpDown,
   Car,
   Clock,
   DollarSign,
   Activity,
-  Bookmark,
   Sparkles,
-  ShieldCheck,
   CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRide } from '../../hooks/useRide';
 import StatCard from '../../components/StatCard';
 import StatusBadge from '../../components/StatusBadge';
-import MapPanel from '../../components/MapPanel';
-import LocationInput from '../../components/LocationInput';
 import { formatCurrency, formatDistance, formatDuration, formatDateTime } from '../../utils/formatters';
 
 export default function RiderDashboard() {
@@ -32,8 +26,6 @@ export default function RiderDashboard() {
     riderTotalSpent,
     riderCompletedTripsCount,
     bookingDraft,
-    updateBookingDraft,
-    swapPickupAndDestination,
   } = useRide();
 
   const recentTrips = [...completedTrips, ...cancelledTrips]
@@ -108,112 +100,38 @@ export default function RiderDashboard() {
         </div>
       )}
 
-      {/* Quick Booking Grid & Map Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Quick Booking Panel */}
-        <div className="lg:col-span-5 bg-[#121033] rounded-3xl border-2 border-white/15 p-6 shadow-[5px_5px_0_#08071E] space-y-5">
-          <div className="flex items-center justify-between">
-            <span className="font-neo-heading text-sm sm:text-base font-black uppercase text-white tracking-wider flex items-center gap-2">
-              <Navigation size={16} className="text-[#D4FF00]" />
-              <span>Quick Ride Dispatch</span>
-            </span>
-            <button
-              type="button"
-              onClick={swapPickupAndDestination}
-              className="p-1.5 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-[#D4FF00] transition-colors cursor-pointer"
-              title="Swap Locations"
-            >
-              <ArrowUpDown size={15} />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <LocationInput
-              label="Pickup Location"
-              value={bookingDraft.pickup}
-              onChange={(loc) => updateBookingDraft({ pickup: loc })}
-              isPickup={true}
-            />
-
-            <LocationInput
-              label="Destination"
-              value={bookingDraft.destination}
-              onChange={(loc) => updateBookingDraft({ destination: loc })}
-              isPickup={false}
-            />
-          </div>
-
-          {/* Saved Places Shortcuts */}
-          <div>
-            <span className="block font-neo-mono text-[10.5px] font-bold text-[#A5A1CE] uppercase tracking-wider mb-2">
-              Favorite Shortcuts
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {currentUser?.savedPlaces?.map((place) => (
-                <button
-                  key={place.id}
-                  type="button"
-                  onClick={() => {
-                    const foundLoc = bookingDraft.destination;
-                    navigate('/rider/book');
-                  }}
-                  className="px-3 py-1.5 rounded-xl border border-white/15 bg-[#08071E] hover:border-[#D4FF00] text-xs font-neo-grotesk font-semibold text-white flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Bookmark size={12} className="text-[#D4FF00]" />
-                  <span>{place.title}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Route Metrics Preview */}
-          <div className="p-4 rounded-2xl bg-[#08071E] border border-white/10 flex items-center justify-between text-xs font-neo-grotesk">
-            <div>
-              <span className="text-[#A5A1CE] font-neo-mono text-[10px] uppercase block">Estimated Distance</span>
-              <span className="font-bold text-white text-sm">{formatDistance(bookingDraft.distanceKm)}</span>
-            </div>
-            <div>
-              <span className="text-[#A5A1CE] font-neo-mono text-[10px] uppercase block">Est. Duration</span>
-              <span className="font-bold text-white text-sm">{formatDuration(bookingDraft.durationMins)}</span>
-            </div>
-            <div>
-              <span className="text-[#A5A1CE] font-neo-mono text-[10px] uppercase block">Starting From</span>
-              <span className="font-black text-[#D4FF00] text-base">{formatCurrency(bookingDraft.estimatedFare)}</span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleFindRide}
-            className="w-full py-3.5 px-4 rounded-xl border-2 border-[#08071E] bg-[#D4FF00] hover:bg-[#c2ec00] text-[#08071E] font-neo-heading text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[3px_3px_0_#3B38F5] transition-all cursor-pointer"
-          >
-            <span>Compare Fares & Choose Vehicle</span>
-            <ArrowRight size={15} strokeWidth={3} />
-          </button>
+      {/* Compact booking shortcut */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#121033] border-2 border-white/15 shadow-[5px_5px_0_#08071E] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="font-neo-heading text-base sm:text-lg font-black uppercase text-white tracking-tight flex items-center gap-2">
+            <Navigation size={17} className="text-[#D4FF00]" />
+            Ready to ride?
+          </h3>
+          <p className="font-neo-grotesk text-xs text-[#A5A1CE] mt-1">
+            {bookingDraft.pickup?.name} → {bookingDraft.destination?.name} · {formatDistance(bookingDraft.distanceKm)} · from {formatCurrency(bookingDraft.estimatedFare)}
+          </p>
         </div>
-
-        {/* Map Preview */}
-        <div className="lg:col-span-7">
-          <MapPanel
-            pickup={bookingDraft.pickup}
-            destination={bookingDraft.destination}
-            height="h-96 sm:h-[420px]"
-          />
-        </div>
+        <Link
+          to="/rider/book"
+          className="shrink-0 px-5 py-3 rounded-xl border-2 border-[#08071E] bg-[#D4FF00] hover:bg-[#c2ec00] text-[#08071E] font-neo-heading text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[3px_3px_0_#3B38F5] transition-all cursor-pointer"
+        >
+          Choose a vehicle
+          <ArrowRight size={15} strokeWidth={3} />
+        </Link>
       </div>
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           title="Total Rides"
-          value={completedTrips.length + cancelledTrips.length + (currentUser?.totalRides || 0)}
-          subtitle="Simulated Commutes"
+          value={completedTrips.length + cancelledTrips.length}
+          subtitle="All bookings"
           icon={Car}
           color="lime"
         />
         <StatCard
           title="Completed Trips"
-          value={riderCompletedTripsCount + (currentUser?.totalRides || 0)}
+          value={riderCompletedTripsCount}
           subtitle="Safe arrivals"
           icon={CheckCircle2}
           color="blue"
@@ -227,8 +145,8 @@ export default function RiderDashboard() {
         />
         <StatCard
           title="Total Spending"
-          value={formatCurrency(riderTotalSpent + (currentUser?.totalSpent || 0))}
-          subtitle="Mock fare transactions"
+          value={formatCurrency(riderTotalSpent)}
+          subtitle="Across completed trips"
           icon={DollarSign}
           color="lime"
         />
@@ -242,7 +160,7 @@ export default function RiderDashboard() {
               Recent Trips History
             </h3>
             <p className="font-neo-grotesk text-xs text-[#A5A1CE]">
-              Latest simulated bookings from your browser session.
+              Your latest bookings, synced from Supabase.
             </p>
           </div>
           <Link

@@ -7,7 +7,7 @@ import { useRide } from '../hooks/useRide';
 /** Sign in / Sign up panel opened from the navbar. */
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   const { login, register } = useAuth();
-  const { loadRides, addToast } = useRide();
+  const { loadCatalog, loadRides, loadState, addToast } = useRide();
 
   const [mode, setMode] = useState(initialMode);
   const [fullName, setFullName] = useState('');
@@ -43,7 +43,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         await register({ fullName, email, phone, password });
         addToast('Account created. Welcome to RideEzz!', 'success');
       }
-      await loadRides();
+      await Promise.all([loadCatalog(), loadRides(), loadState()]);
       onClose();
     } catch (err) {
       setError(err.message || 'Authentication failed');

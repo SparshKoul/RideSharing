@@ -39,11 +39,9 @@ export default function ProfileDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2.5 p-1.5 sm:px-3 sm:py-2 rounded-xl border border-white/15 bg-[#121033] hover:border-white/30 transition-all cursor-pointer"
       >
-        <img
-          src={currentUser?.avatar || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80'}
-          alt={currentUser?.name || 'Customer'}
-          className="w-8 h-8 rounded-lg object-cover border border-[#08071E]"
-        />
+        <div className="w-8 h-8 rounded-lg bg-[#D4FF00] border border-[#08071E] flex items-center justify-center text-[#08071E] font-black text-sm shrink-0">
+          {(currentUser?.name || 'C').charAt(0).toUpperCase()}
+        </div>
         <div className="hidden sm:block text-left">
           <div className="font-neo-heading text-xs font-black uppercase text-white truncate max-w-[120px]">
             {currentUser?.name || 'Customer'}

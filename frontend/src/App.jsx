@@ -8,13 +8,15 @@ import { useRideStore } from './store/rideStore';
 export default function App() {
   useEffect(() => {
     (async () => {
-      // Get a JWT first, then load catalog + trips from Supabase.
-      await useAuthStore.getState().bootstrap();
-      await Promise.all([
-        useRideStore.getState().loadCatalog(),
-        useRideStore.getState().loadRides(),
-        useRideStore.getState().loadState(),
-      ]);
+      // Restore a real DB session, then load catalog + trips from Supabase.
+      const authenticated = await useAuthStore.getState().bootstrap();
+      if (authenticated) {
+        await Promise.all([
+          useRideStore.getState().loadCatalog(),
+          useRideStore.getState().loadRides(),
+          useRideStore.getState().loadState(),
+        ]);
+      }
     })();
   }, []);
 

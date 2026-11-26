@@ -30,19 +30,22 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  /** Restore a session only from an existing DB-issued JWT - never auto-login. */
   bootstrap: async () => {
-    if (api.getAuthToken()) {
-      await get().loadProfile();
-      set({ isAuthenticated: true });
-      return;
+    if (!api.getAuthToken()) {
+      set({ isAuthenticated: false, isBootstrapping: false });
+      return false;
     }
     set({ isBootstrapping: true });
     try {
-      await api.login(DEMO_EMAIL, DEMO_PASSWORD);
+      await api.me();
       await get().loadProfile();
-      set({ token: api.getAuthToken(), isAuthenticated: true, authError: null });
+      set({ isAuthenticated: true, token: api.getAuthToken(), authError: null });
+      return true;
     } catch (err) {
-      set({ authError: err.message });
+      api.setAuthToken(null);
+      set({ isAuthenticated: false, token: null, authError: 'Session expired, please sign in again' });
+      return false;
     } finally {
       set({ isBootstrapping: false });
     }
@@ -52,7 +55,12 @@ export const useAuthStore = create((set, get) => ({
     set({ authError: null });
     try {
       const { user } = await api.login(email, password);
-      const rider = { ...HARDCODED_CUSTOMER, id: user.id, email: user.email };
+      const rider = {
+        ...HARDCODED_CUSTOMER,
+        id: user.id,
+        email: user.email,
+        name: user.name || email.split('@')[0],
+      };
       set({ role: user.role || 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
       await get().loadProfile();
       return user;
@@ -70,8 +78,8 @@ export const useAuthStore = create((set, get) => ({
         ...HARDCODED_CUSTOMER,
         id: user.id,
         email: user.email,
-        name: payload.fullName || HARDCODED_CUSTOMER.name,
-        phone: payload.phone || HARDCODED_CUSTOMER.phone,
+        name: user.name || payload.fullName || user.email.split('@')[0],
+        phone: payload.phone || '',
       };
       set({ role: 'rider', customer: rider, rider, isAuthenticated: true, token: api.getAuthToken() });
       await get().loadProfile();
@@ -110,7 +118,7 @@ export const useAuthStore = create((set, get) => ({
       isAuthenticated: false,
       token: null,
     });
-    get().bootstrap();
+    get().loginAsRider();
   },
 
   logout: () => {

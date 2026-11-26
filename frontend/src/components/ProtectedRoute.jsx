@@ -1,9 +1,10 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
-/**
- * Auth entry points live in the navbar modal, so routes stay reachable
- * while signed out - the navbar shows Sign In / Sign Up in that state.
- */
+/** Rider pages require a real DB session; sign in from the navbar modal. */
 export default function ProtectedRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/" replace />;
   return children;
 }
